@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jésus t'aime</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: linear-gradient(160deg, #fdfaf3 0%, #f3ecd8 50%, #eaddb8 100%);
+    color: #3b2f1e;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .croix {
+    font-size: 3rem;
+    color: #b8860b;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 6px rgba(184,134,11,0.3);
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    margin: 0.2rem 0 0.5rem;
+    color: #7a4a1a;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .sous-titre {
+    font-style: italic;
+    color: #8a7150;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+
+  .carte-verset {
+    background: rgba(255,255,255,0.6);
+    border: 1px solid #d8c58f;
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    max-width: 600px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(122,74,26,0.15);
+    margin-bottom: 2rem;
+  }
+
+  #verset-texte {
+    font-size: 1.4rem;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+    color: #4a3b23;
+  }
+
+  #verset-ref {
+    font-weight: bold;
+    color: #b8860b;
+    font-size: 1.05rem;
+  }
+
+  button {
+    padding: 0.9rem 2.2rem;
+    font-size: 1.15rem;
+    font-family: inherit;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #d4a63a, #b8860b);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(184,134,11,0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(184,134,11,0.5);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+  <div class="croix">✝</div>
+  <h1>Jésus t'aime</h1>
+  <p class="sous-titre">« Car Dieu a tant aimé le monde... »</p>
+
+  <div class="carte-verset">
+    <p id="verset-texte">Dieu veux te parler appuie sur le bouton ❤️✝️</p>
+    <p id="verset-ref"></p>
+  </div>
+
+  <button id="tirer-verset">✨ Tire un verset ✨</button>
+
+  <script src="verset.html"></script>
+</body>
+</html>
