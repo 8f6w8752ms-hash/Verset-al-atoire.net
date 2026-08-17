@@ -947,6 +947,7 @@ const versets = [
   { texte: "Qu’est-ce que l’homme, pour que tu te souviennes de lui ?", ref: "Psaume 8:4" },
   { texte: "Il ne nous traite pas selon nos péchés, il ne nous punit pas selon nos iniquités.", ref: "Psaume 103:10" },
   { texte: "Il n’est pas toujours à contester, il ne garde pas sa colère à toujours.", ref: "Psaume 103:9" },
+  { texte: "Alors ceux qui craignent l'Éternel se parlèrent l'un à l'autre ; l'Éternel fut attentif, et il écouta; et un livre de souvenir fut écrit devant lui pour ceux qui craignent l'Éternel et qui honore son nom.", ref: "malachie 3:16"}
 ];
 // ─────────────────────────────────────
 // VERS ET DU JOUR — HEURE FRANÇAISE
