@@ -6,7 +6,7 @@
 
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 
-<title>un jour une parole</title>
+<title>acceuille</title>
 
 <style>
  html,
@@ -704,6 +704,9 @@ body {
           Une histoire, Un encouragement.
         </small>
       </span>
+             
+             </a>
+            
 <a href="https://www.jesus-stickers.com/stickers-jesus-baches-evangelisation.F/s41531c/DESTOCKAGE-JUSQU-A-60-" target="_blank" rel="noopener noreferrer">
 
   <span class="menu-icon">
@@ -925,74 +928,72 @@ body {
 
 <script>
 
-  const menuBtn = document.getElementById("menu-btn");
-  const menu = document.getElementById("menu");
-  const menuClose = document.getElementById("menu-close");
-  const menuOverlay = document.getElementById("menu-overlay");
-
-  function ouvrirMenu() {
-
-    menu.classList.add("open");
-    menuOverlay.classList.add("open");
-
-    menuBtn.setAttribute("aria-expanded", "true");
-
-  }
-
-  function fermerMenu() {
-
-    menu.classList.remove("open");
-    menuOverlay.classList.remove("open");
-
-    menuBtn.setAttribute("aria-expanded", "false");
-
-  }
-
-  menuBtn.addEventListener("click", ouvrirMenu);
-
-  menuClose.addEventListener("click", fermerMenu);
-
-  menuOverlay.addEventListener("click", fermerMenu);
+const menuBtn = document.getElementById("menu-btn");
+const menu = document.getElementById("menu");
+const menuClose = document.getElementById("menu-close");
+const menuOverlay = document.getElementById("menu-overlay");
 
 
-  /* =========================
-     NAVIGATION FLUIDE
-     ========================= */
+/* =========================
+   OUVRIR LE MENU
+   ========================= */
 
-  const liensMenu = document.querySelectorAll(".menu-content a");
+function ouvrirMenu() {
+  menu.classList.add("open");
+  menuOverlay.classList.add("open");
+  menuBtn.setAttribute("aria-expanded", "true");
+}
 
-  liensMenu.forEach(lien => {
 
-    lien.addEventListener("click", function(event) {
+/* =========================
+   FERMER LE MENU
+   ========================= */
 
-      event.preventDefault();
+function fermerMenu() {
+  menu.classList.remove("open");
+  menuOverlay.classList.remove("open");
+  menuBtn.setAttribute("aria-expanded", "false");
+}
 
-      const destination = this.href;
 
-      fermerMenu();
+/* =========================
+   BOUTONS DU MENU
+   ========================= */
 
-      setTimeout(() => {
+menuBtn.addEventListener("click", ouvrirMenu);
 
-        window.location.href = destination;
+menuClose.addEventListener("click", fermerMenu);
 
-      }, 300);
+menuOverlay.addEventListener("click", fermerMenu);
 
-    });
 
+/* =========================
+   NAVIGATION DU MENU
+   ========================= */
+
+const liensMenu = document.querySelectorAll(".menu-content a");
+
+liensMenu.forEach(lien => {
+
+  lien.addEventListener("click", () => {
+    fermerMenu();
   });
 
+});
 
-  /* =========================
-     FERMER AVEC LA TOUCHE ÉCHAP
-     ========================= */
 
-  document.addEventListener("keydown", function(event) {
+/* =========================
+   TOUCHE ÉCHAP
+   ========================= */
 
-    if (event.key === "Escape") {
-      fermerMenu();
-    }
+document.addEventListener("keydown", function(event) {
 
-  });
+  if (event.key === "Escape") {
+    fermerMenu();
+  }
+
+});
+
 
 /* =========================
    ANIMATION DU VERSET
@@ -1005,60 +1006,97 @@ const versetRef =
   document.getElementById("verset-ref");
 
 
-const observateurVerset =
-  new MutationObserver(() => {
+if (versetTexte && versetRef) {
 
-    versetTexte.classList.add("changement");
-    versetRef.classList.add("changement");
+  const observateurVerset =
+    new MutationObserver(() => {
 
-    setTimeout(() => {
+      versetTexte.classList.add("changement");
+      versetRef.classList.add("changement");
 
-      versetTexte.classList.remove("changement");
-      versetRef.classList.remove("changement");
+      setTimeout(() => {
 
-    }, 50);
+        versetTexte.classList.remove("changement");
+        versetRef.classList.remove("changement");
 
-  });
+      }, 50);
 
-
-observateurVerset.observe(
-  versetTexte,
-  {
-    childList: true,
-    subtree: true,
-    characterData: true
-  }
-);
+    });
 
 
-observateurVerset.observe(
-  versetRef,
-  {
-    childList: true,
-    subtree: true,
-    characterData: true
-  }
-);
+  observateurVerset.observe(
+    versetTexte,
+    {
+      childList: true,
+      subtree: true,
+      characterData: true
+    }
+  );
+
+
+  observateurVerset.observe(
+    versetRef,
+    {
+      childList: true,
+      subtree: true,
+      characterData: true
+    }
+  );
+
+}
+
 
 /* =========================
-   GESTION DU BOUTON COPIER
+   BOUTON COPIER
    ========================= */
 
-const boutonCopier = document.getElementById("copier-verset");
+const boutonCopier =
+  document.getElementById("copier-verset");
 
-boutonCopier.addEventListener("click", () => {
-  const texte = versetTexte.innerText;
-  const ref = versetRef.innerText;
-  
-  const texteACopier = ref ? `"${texte}" — ${ref}` : texte;
 
-  navigator.clipboard.writeText(texteACopier).then(() => {
-    boutonCopier.innerText = "✓ Copié !";
-    setTimeout(() => {
-      boutonCopier.innerText = "📋 Copier le verset";
-    }, 2000);
+if (boutonCopier && versetTexte && versetRef) {
+
+  boutonCopier.addEventListener("click", () => {
+
+    const texte = versetTexte.innerText;
+    const ref = versetRef.innerText;
+
+    const texteACopier =
+      ref
+        ? `"${texte}" — ${ref}`
+        : texte;
+
+
+    navigator.clipboard.writeText(texteACopier)
+      .then(() => {
+
+        boutonCopier.innerText = "✓ Copié !";
+
+        setTimeout(() => {
+
+          boutonCopier.innerText =
+            "📋 Copier le verset";
+
+        }, 2000);
+
+      })
+      .catch(() => {
+
+        boutonCopier.innerText =
+          "❌ Impossible de copier";
+
+        setTimeout(() => {
+
+          boutonCopier.innerText =
+            "📋 Copier le verset";
+
+        }, 2000);
+
+      });
+
   });
-});
+
+}
 
 </script>
 
