@@ -1,1063 +1,728 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>acceuille</title>
-
-<style>
- html,
-body {
-  touch-action: manipulation;
-}
-* {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    background: linear-gradient(160deg, #fdfaf3 0%, #f3ecd8 50%, #eaddb8 100%);
-    color: #3b2f1e;
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .site {
-    width: 100%;
-    max-width: 950px;
-    margin: auto;
-  }
-
-  /* =========================
-     MENU HAMBURGER
-     ========================= */
-
-  .menu-btn {
-    position: fixed;
-    top: 22px;
-    left: 22px;
-
-    width: 52px;
-    height: 52px;
-
-    min-width: 0;
-    padding: 0;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 5px;
-
-    border-radius: 15px;
-
-    background: rgba(255,255,255,0.72);
-
-    border: 1px solid rgba(184,134,11,0.25);
-
-    box-shadow:
-      0 8px 22px rgba(122,74,26,0.14),
-      inset 0 1px 0 rgba(255,255,255,0.85);
-
-    cursor: pointer;
-    z-index: 1000;
-
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-}
-
-.menu-btn:hover {
-    transform: translateY(-2px);
-
-    box-shadow:
-      0 11px 28px rgba(122,74,26,0.18);
-}
-
-  .menu-btn span {
-    width: 21px;
-    height: 2px;
-    border-radius: 5px;
-    background: #7a4a1a;
-  }
-
-  .menu-btn:hover {
-    transform: none;
-    filter: none;
-  }
-
-  /* =========================
-     FOND DU MENU
-     ========================= */
-
-  .menu-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(59,47,30,0.25);
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity 0.25s ease,
-      visibility 0.25s ease;
-    z-index: 1100;
-  }
-
-  .menu-overlay.open {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* =========================
-     MENU
-     ========================= */
-
-  .menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: min(330px, 85vw);
-    height: 100vh;
-    padding: 1.5rem;
-    background: rgba(253,250,243,0.97);
-    border-right: 1px solid #d8c58f;
-    box-shadow:
-      8px 0 35px rgba(59,47,30,0.15);
-    transform: translateX(-105%);
-    transition:
-      transform 0.3s cubic-bezier(.4,0,.2,1);
-    z-index: 1200;
-  }
-
-  .menu.open {
-    transform: translateX(0);
-  }
-
-  .menu-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 1.2rem;
-    border-bottom: 1px solid rgba(184,134,11,0.2);
-    color: #7a4a1a;
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-
-  .menu-close {
-    min-width: 0;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: transparent;
-    color: #7a4a1a;
-    font-size: 1.8rem;
-    box-shadow: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  .menu-close:hover {
-    background: rgba(184,134,11,0.1);
-    box-shadow: none;
-    transform: none;
-  }
-
-  .menu-content {
-    padding-top: 1.5rem;
-  }
-
-  .menu-content a {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 15px;
-    color: #4a3b23;
-    text-decoration: none;
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .menu-content a:hover {
-    background: rgba(184,134,11,0.1);
-    transform: translateX(4px);
-  }
-
-  .menu-icon {
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border-radius: 12px;
-    background: rgba(184,134,11,0.12);
-    font-size: 1.4rem;
-  }
-
-  .menu-content strong {
-    display: block;
-    color: #7a4a1a;
-    font-size: 1rem;
-  }
-
-  .menu-content small {
-    display: block;
-    margin-top: 3px;
-    color: #8a7150;
-    font-size: 0.78rem;
-  }
-
-  /* =========================
-     EN-TÊTE
-     ========================= */
-
-  header {
-    margin-bottom: 2rem;
-  }
-
-  .croix {
-    width: 65px;
-    height: 65px;
-
-    margin: 0 auto 1rem;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 17px;
-
-    background:
-      linear-gradient(
-        145deg,
-        rgba(255,255,255,0.82),
-        rgba(244,232,202,0.72)
-      );
-
-    border:
-      1px solid rgba(184,134,11,0.25);
-
-    color:
-      #b8860b;
-
-    font-size:
-      3rem;
-
-    box-shadow:
-      0 10px 26px rgba(122,74,26,0.14),
-      inset 0 1px 0 rgba(255,255,255,0.9);
-
-    text-shadow:
-      0 2px 8px rgba(184,134,11,0.3);
-}
-
-  h1 {
-    margin: 0;
-    font-size: clamp(2.7rem, 7vw, 4.3rem);
-    line-height: 1;
-    color: #7a4a1a;
-    letter-spacing: 1px;
-    text-shadow: 1px 2px 3px rgba(0,0,0,0.08);
-  }
-
-  .sous-titre {
-    margin: 1rem auto 0;
-    font-size: 1.05rem;
-    font-style: italic;
-    color: #8a7150;
-  }
-
-  /* =========================
-     NAVIGATION
-     ========================= */
-
-  .navigation {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    font-size: 0.85rem;
-    color: #7a4a1a;
-  }
-
-  .navigation span::before {
-    content: "✦";
-    margin-right: 6px;
-    color: #b8860b;
-  }
-
-  /* =========================
-     BLOC PRINCIPAL
-     ========================= */
-
-  .hero {
-    position: relative;
-    padding: 2.8rem 2rem;
-    border-radius: 28px;
-    background: rgba(255,255,255,0.48);
-    border: 1px solid rgba(216,197,143,0.85);
-    box-shadow:
-      0 18px 50px rgba(122,74,26,0.14),
-      inset 0 1px 0 rgba(255,255,255,0.7);
-    -webkit-backdrop-filter: blur(7px);
-    backdrop-filter: blur(7px);
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: "✦";
-    position: absolute;
-    top: 18px;
-    left: 25px;
-    color: rgba(184,134,11,0.35);
-    font-size: 1.2rem;
-  }
-
-  .hero::after {
-    content: "✦";
-    position: absolute;
-    bottom: 18px;
-    right: 25px;
-    color: rgba(184,134,11,0.35);
-    font-size: 1.2rem;
-  }
-
-  .sur-titre {
-    margin: 0 0 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-size: 0.72rem;
-    font-weight: bold;
-    color: #b8860b;
-  }
-
-  .hero h2 {
-    margin: 0 0 0.8rem;
-    font-size: clamp(1.8rem, 5vw, 2.5rem);
-    color: #7a4a1a;
-  }
-
-  .hero-intro {
-    max-width: 600px;
-    margin: 0 auto 2rem;
-    color: #806b4d;
-    line-height: 1.7;
-  }
-
-  /* =========================
-     CARTE VERSET
-     ========================= */
-
-  .carte-verset {
-    max-width: 720px;
-    min-height: 190px;
-    margin: 0 auto 2rem;
-    padding: 2.4rem 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 22px;
-    background: rgba(255,255,255,0.68);
-    border: 1px solid #d8c58f;
-    box-shadow:
-      0 10px 30px rgba(122,74,26,0.12),
-      inset 0 1px 0 rgba(255,255,255,0.8);
-  }
-
-  .guillemet {
-    font-size: 3.5rem;
-    line-height: 0.5;
-    color: rgba(184,134,11,0.45);
-    margin-bottom: 1rem;
-  }
-
-  #verset-texte {
-    margin: 0 auto 1.2rem;
-    max-width: 600px;
-    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
-    line-height: 1.7;
-    color: #4a3b23;
-  }
-
-  #verset-ref {
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #b8860b;
-  }
-
-  /* Bouton copier spécifique */
-  .bouton-copier {
-    min-width: auto;
-    padding: 0.5rem 1.2rem;
-    font-size: 0.85rem;
-    border-radius: 20px;
-    background: rgba(184, 134, 11, 0.15);
-    color: #7a4a1a;
-    border: 1px solid rgba(184, 134, 11, 0.4);
-    box-shadow: none;
-    margin-top: 0.5rem;
-  }
-
-  .bouton-copier:hover {
-    background: rgba(184, 134, 11, 0.25);
-    transform: translateY(-2px);
-    box-shadow: none;
-  }
-
-/* Animation du verset */
-
-#verset-texte,
-#verset-ref {
-  opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity 0.45s ease,
-    transform 0.45s ease;
-}
-
-#verset-texte.changement,
-#verset-ref.changement {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-  /* =========================
-     BOUTONS
-     ========================= */
-
-  .boutons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  button {
-    min-width: 220px;
-    padding: 1rem 1.7rem;
-    border: none;
-    border-radius: 50px;
-    font-family: inherit;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-    background: linear-gradient(
-      135deg,
-      #d4a63a,
-      #b8860b
-    );
-    box-shadow:
-      0 7px 18px rgba(184,134,11,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.25);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease,
-      filter 0.2s ease;
-  }
-
-  button:hover {
-    transform: translateY(-3px);
-    filter: brightness(1.05);
-    box-shadow:
-      0 11px 25px rgba(184,134,11,0.38);
-  }
-
-  button:active {
-    transform: translateY(-1px);
-  }
-
-  #verset-jour {
-    background: linear-gradient(
-      135deg,
-      #a3703c,
-      #7a4a1a
-    );
-  }
-
-  /* =========================
-     SÉPARATEUR
-     ========================= */
-
-  .separateur {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    max-width: 650px;
-    margin: 3rem auto;
-    color: #b8860b;
-  }
-
-  .separateur::before,
-  .separateur::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: rgba(184,134,11,0.3);
-  }
-
-  /* =========================
-     BLOCS
-     ========================= */
-
-  .blocs {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.3rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .bloc {
-    padding: 1.8rem;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.43);
-    border: 1px solid rgba(216,197,143,0.7);
-    box-shadow:
-      0 8px 25px rgba(122,74,26,0.08);
-    transition: transform 0.2s ease;
-  }
-
-  .bloc:hover {
-    transform: translateY(-3px);
-  }
-
-  .bloc-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.6rem;
-  }
-
-  .bloc h3 {
-    margin: 0 0 0.7rem;
-    color: #7a4a1a;
-    font-size: 1.2rem;
-  }
-
-  .bloc p {
-    margin: 0;
-    color: #806b4d;
-    line-height: 1.65;
-    font-size: 0.95rem;
-  }
-
-  /* =========================
-     CITATION
-     ========================= */
-
-  .citation {
-    max-width: 700px;
-    margin: 0 auto 2.5rem;
-    padding: 1.5rem 2rem;
-    border-left: 3px solid #b8860b;
-    border-right: 3px solid #b8860b;
-    color: #7a4a1a;
-    font-style: italic;
-    line-height: 1.7;
-  }
-
-  /* =========================
-     FOOTER
-     ========================= */
-
-  footer {
-    margin-top: 1rem;
-    color: #8a7150;
-    font-size: 0.85rem;
-  }
-
-  footer .mini-croix {
-    color: #b8860b;
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
-  }
-
-  /* =========================
-     MOBILE
-     ========================= */
-
-  @media (max-width: 650px) {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Un jour, une histoire</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
+      margin: 0;
       padding: 1.2rem;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.45), transparent 35%),
+        radial-gradient(circle at 85% 90%, rgba(183,139,62,0.12), transparent 38%),
+        linear-gradient(145deg, #fffaf0 0%, #f7eed9 45%, #ead9b5 100%);
+      color: #4a3824;
     }
 
+    .site {
+      width: 100%;
+      max-width: 850px;
+      margin: auto;
+    }
+
+    /* =========================
+       MENU HAMBURGER
+    ========================= */
     .menu-btn {
-      top: 15px;
-      left: 15px;
+      position: fixed;
+      top: 22px;
+      left: 22px;
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-radius: 16px;
+      background: rgba(255,252,244,0.88);
+      border: 1px solid rgba(122,74,26,0.2);
+      box-shadow: 0 8px 25px rgba(92,59,28,0.15), inset 0 1px 0 rgba(255,255,255,0.9);
+      cursor: pointer;
+      z-index: 1000;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 11px 30px rgba(92,59,28,0.2);
+    }
+
+    .menu-btn span {
+      width: 21px;
+      height: 2px;
+      border-radius: 5px;
+      background: #7a4a1a;
+    }
+
+    /* =========================
+       EN-TÊTE
+    ========================= */
+    header {
+      text-align: center;
+      margin: 3.5rem 0 2.8rem;
+    }
+
+    .croix {
+      width: 74px;
+      height: 74px;
+      margin: 0 auto 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #fffdf8, #f3e8cc);
+      border: 1px solid rgba(184,134,11,0.25);
+      color: #b8860b;
+      font-size: 3rem;
+      box-shadow: 0 12px 30px rgba(122,74,26,0.14), inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+
+    h1 {
+      margin: 0;
+      color: #70451f;
+      font-size: clamp(2.2rem, 7vw, 3.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.5px;
+    }
+
+    .sous-titre {
+      margin: 1rem auto 0;
+      max-width: 520px;
+      color: #907755;
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    header::after {
+      content: "";
+      display: block;
+      width: 58px;
+      height: 2px;
+      margin: 1.4rem auto 0;
+      background: #b8860b;
+      border-radius: 20px;
+      opacity: 0.75;
+    }
+
+    /* =========================
+       CARTE HISTOIRE
+    ========================= */
+    .histoire {
+      position: relative;
+      background: rgba(255,253,247,0.72);
+      border: 1px solid rgba(184,134,11,0.24);
+      border-radius: 28px;
+      padding: 2.4rem;
+      box-shadow: 0 20px 50px rgba(122,74,26,0.13), inset 0 1px 0 rgba(255,255,255,0.85);
+      animation: apparition 0.6s ease;
+      overflow: hidden;
+    }
+
+    .histoire::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #b8860b, transparent);
+      opacity: 0.7;
+    }
+
+    .histoire::after {
+      content: "✦";
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      color: #b8860b;
+      opacity: 0.28;
+      font-size: 1.2rem;
+    }
+
+    @keyframes apparition {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .histoire h2 {
+      margin: 0 auto 1.8rem;
+      max-width: 650px;
+      text-align: center;
+      color: #70451f;
+      font-size: clamp(1.8rem, 6vw, 2.5rem);
+      line-height: 1.2;
+    }
+
+    .histoire h2::after {
+      content: "";
+      display: block;
+      width: 42px;
+      height: 2px;
+      margin: 1rem auto 0;
+      background: #b8860b;
+      border-radius: 20px;
+      opacity: 0.7;
+    }
+
+    #texte-histoire {
+      max-width: 680px;
+      margin: auto;
+      color: #5b4932;
+      font-size: 1.08rem;
+      line-height: 1.9;
+      white-space: pre-line;
+      text-align: left;
+    }
+
+    .encouragement {
+      max-width: 680px;
+      margin: 2.3rem auto 0;
+      padding: 1.5rem 1.4rem;
+      border-left: 3px solid #b8860b;
+      border-right: 3px solid #b8860b;
+      border-radius: 16px;
+      background: rgba(184,134,11,0.065);
+      color: #70451f;
+      text-align: center;
+      font-style: italic;
+      font-size: 1.03rem;
+      line-height: 1.75;
+    }
+
+    .reference {
+      margin-top: 1.7rem;
+      text-align: center;
+      color: #a87508;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      margin: 3rem 0 1.5rem;
+      text-align: center;
+      color: #907755;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    /* =========================
+       OVERLAY & MENU
+    ========================= */
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(59,47,30,0.28);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      z-index: 1100;
+    }
+
+    .menu-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: min(340px, 88vw);
+      height: 100vh;
+      padding: 1.5rem;
+      background: rgba(253,248,237,0.98);
+      border-right: 1px solid rgba(184,134,11,0.22);
+      box-shadow: 10px 0 40px rgba(59,47,30,0.17);
+      transform: translateX(-105%);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      z-index: 1200;
+    }
+
+    .menu.open {
+      transform: translateX(0);
+    }
+
+    .menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0 1.3rem;
+      border-bottom: 1px solid rgba(184,134,11,0.2);
+      color: #70451f;
+      font-size: 1.45rem;
+      font-weight: bold;
+    }
+
+    .menu-close {
+      min-width: 0;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: rgba(184,134,11,0.08);
+      color: #70451f;
+      font-size: 1.8rem;
+      box-shadow: none;
+      border: 1px solid rgba(184,134,11,0.16);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .menu-close:hover {
+      background: rgba(184,134,11,0.15);
+      transform: rotate(5deg);
+    }
+
+    .menu-content {
+      padding-top: 1.5rem;
+    }
+
+    .menu-content a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+      padding: 0.9rem;
+      border-radius: 18px;
+      color: #5b4932;
+      text-decoration: none;
+      border: 1px solid transparent;
+      transition: background 0.2s ease, transform 0.2s ease, border 0.2s ease;
+    }
+
+    .menu-content a:hover {
+      background: rgba(184,134,11,0.08);
+      border: 1px solid rgba(184,134,11,0.14);
+      transform: translateX(4px);
+    }
+
+    .menu-icon {
       width: 48px;
       height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
       border-radius: 14px;
+      background: rgba(184,134,11,0.1);
+      border: 1px solid rgba(184,134,11,0.15);
+      font-size: 1.35rem;
     }
 
-    .navigation {
-      gap: 1rem;
+    .menu-content strong {
+      display: block;
+      color: #70451f;
+      font-size: 1rem;
     }
 
-    .hero {
-      padding: 2.2rem 1rem;
+    .menu-content small {
+      display: block;
+      margin-top: 4px;
+      color: #907755;
+      font-size: 0.78rem;
+      line-height: 1.4;
     }
 
-    .carte-verset {
-      padding: 2rem 1.2rem;
+    /* =========================
+       BOUTON « LIRE » & TEXTE BIBLIQUE
+       (sortis de la media query pour s'appliquer
+        sur toutes les tailles d'écran)
+    ========================= */
+    .bouton-lire {
+      display: block;
+      margin: 2rem auto 0;
+      padding: 0.85rem 1.8rem;
+      border: 1px solid rgba(184,134,11,0.3);
+      border-radius: 14px;
+      background: linear-gradient(145deg, #fffdf8, #f3e8cc);
+      color: #70451f;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(122,74,26,0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .blocs {
-      grid-template-columns: 1fr;
+    .bouton-lire:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 11px 25px rgba(122,74,26,0.18);
     }
 
-    button {
-      width: 100%;
-      max-width: 350px;
+    #texte-biblique {
+      display: none;
+      max-width: 680px;
+      margin: 1.8rem auto 0;
+      padding-top: 1.8rem;
+      border-top: 1px solid rgba(184,134,11,0.2);
+      color: #5b4932;
+      font-size: 1rem;
+      line-height: 1.9;
+      white-space: pre-line;
+      text-align: left;
     }
-  }
-</style>
+
+    @media (max-width: 600px) {
+      body { padding: 0.9rem; }
+      header { margin-top: 4.3rem; margin-bottom: 2.3rem; }
+      .croix { width: 65px; height: 65px; border-radius: 16px; font-size: 2.7rem; }
+      h1 { font-size: 2.35rem; }
+      .sous-titre { font-size: 0.98rem; }
+      .histoire { padding: 1.55rem; border-radius: 25px; }
+      .histoire h2 { font-size: 1.85rem; margin-bottom: 1.5rem; }
+      #texte-histoire { font-size: 1rem; line-height: 1.8; }
+      .encouragement { padding: 1.25rem 1rem; font-size: 0.98rem; }
+      .menu-btn { top: 15px; left: 15px; width: 48px; height: 48px; border-radius: 14px; }
+      .menu { width: min(330px, 88vw); padding: 1.3rem; }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- =========================
-     MENU HAMBURGER
-     ========================= -->
+  <!-- =========================
+       MENU HAMBURGER
+  ========================= -->
+  <button class="menu-btn" id="menu-btn" aria-label="Ouvrir le menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 
-<button
-  class="menu-btn"
-  id="menu-btn"
-  aria-label="Ouvrir le menu"
-  aria-expanded="false"
->
-  <span></span>
-  <span></span>
-  <span></span>
-</button>
+  <div class="menu-overlay" id="menu-overlay"></div>
 
-<div class="menu-overlay" id="menu-overlay"></div>
+  <nav class="menu" id="menu">
+    <div class="menu-header">
+      <span>Menu</span>
+      <button class="menu-close" id="menu-close" aria-label="Fermer le menu">×</button>
+    </div>
 
-<nav class="menu" id="menu">
+    <div class="menu-content">
+      <!-- ACCUEIL -->
+      <a href="index.html">
+        <span class="menu-icon">🏠</span>
+        <span>
+          <strong>Accueil</strong>
+          <small>Retourner à l'accueil.</small>
+        </span>
+      </a>
 
-  <div class="menu-header">
+      <!-- HISTOIRES BIBLIQUES -->
+      <a href="un-jour-une-histoire.html">
+        <span class="menu-icon">📖</span>
+        <span>
+          <strong>Un jour, une histoire</strong>
+          <small>Une histoire, un encouragement.</small>
+        </span>
+      </a>
 
-    <span>Menu</span>
+      <!-- STICKERS (CORRIGÉ AVEC target="_blank") -->
+      <a href="https://www.jesus-stickers.com/stickers-jesus-baches-evangelisation.F/s41531c/DESTOCKAGE-JUSQU-A-60-" target="_blank" rel="noopener noreferrer">
+        <span class="menu-icon">🖨️</span>
+        <span>
+          <strong>Stickers 🔖</strong>
+          <small>Découvrir les stickers.</small>
+        </span>
+      </a>
+    </div>
+  </nav>
 
-    <button
-      class="menu-close"
-      id="menu-close"
-      aria-label="Fermer le menu"
-    >
-      ×
-    </button>
+  <div class="site">
+    <header>
+      <div class="croix">✝</div>
+      <h1>Un jour, une histoire</h1>
+      <p class="sous-titre">Une histoire biblique, un encouragement.</p>
+    </header>
 
+    <main>
+      <article class="histoire">
+        <h2 id="titre-histoire">Chargement...</h2>
+        <div id="texte-histoire">Chargement de l'histoire...</div>
+<button class="bouton-lire" id="bouton-lire">Lire</button>
+
+<div id="texte-biblique"></div>
+        <div class="encouragement" id="encouragement"></div>
+        <div class="reference" id="reference"></div>
+      </article>
+    </main>
+
+    <footer>
+      ✝<br><br>
+      Jésus t'aime — Que sa paix t'accompagne.
+    </footer>
   </div>
 
-  <div class="menu-content">
-
-    <!-- ACCUEIL -->
-
-    <a href="index.html">
-
-      <span class="menu-icon">
-        🏠
-      </span>
-
-      <span>
-        <strong>Accueil</strong>
-
-        <small>
-          Retourner à l'accueil.
-        </small>
-      </span>
-
-    </a>
-
-
-    <!-- HISTOIRES BIBLIQUES -->
-
-
-    <a href="un-jour-une-histoire.html">
-
-      <span class="menu-icon">
-        📖
-      </span>
-
-      <span>
-        <strong>un jour, une histoire </strong>
-
-        <small>
-          Une histoire, Un encouragement.
-        </small>
-      </span>
-<a href="https://www.jesus-stickers.com/stickers-jesus-baches-evangelisation.F/s41531c/DESTOCKAGE-JUSQU-A-60-" target="_blank" rel="noopener noreferrer">
-
-  <span class="menu-icon">
-    🖨️
-  </span>
-
-  <span>
-
-    <strong>
-      Stickers 🔖
-    </strong>
-
-    <small>
-      Découvre leurs stickers à prix coûtant.
-    </small>
-
-  </span>
-
-</a>
-    </a>
-
-  </div>
-
-</nav>
-
-
-<div class="site">
-
-
-  <!-- EN-TÊTE -->
-
-  <header>
-
-    <div class="croix">
-      ✝
-    </div>
-
-    <h1>
-      verset aléatoire
-    </h1>
-
-    <p class="sous-titre">
-      Aujourd'hui Dieu veux te parler.
-    </p>
-
-  </header>
-
-
-  <!-- NAVIGATION VISUELLE -->
-
-  <div class="navigation">
-
-    <span>
-      La Parole
-    </span>
-
-    <span>
-      La foi
-    </span>
-
-    <span>
-      L'espérance
-    </span>
-
-  </div>
-
-
-  <!-- SECTION PRINCIPALE -->
-
-  <main class="hero">
-
-    <p class="sur-titre">
-      ✦ LA PAROLE DU JOUR ✦
-    </p>
-
-    <h2>
-      Un verset pour aujourd'hui
-    </h2>
-
-    <p class="hero-intro">
-      tire un verset et prends le temps de le lire.
-    </p>
-
-
-    <!-- CARTE VERSET -->
-
-    <div class="carte-verset">
-
-      <div class="guillemet">
-        “
-      </div>
-
-      <p id="verset-texte">
-        Dieu veut te parler, appuie sur le bouton ❤️✝️
-      </p>
-
-      <p id="verset-ref"></p>
-
-      <button id="copier-verset" class="bouton-copier">
-        📋 Copier le verset
-      </button>
-
-    </div>
-
-
-    <!-- BOUTONS -->
-
-    <div class="boutons">
-
-      <button id="verset-jour">
-        📖 Verset du jour
-      </button>
-
-      <button id="tirer-verset">
-        ✨ Tire un verset ✨
-      </button>
-
-    </div>
-
-  </main>
-
-
-  <!-- SÉPARATEUR -->
-
-  <div class="separateur">
-    ✝
-  </div>
-
-
-  <!-- BLOCS -->
-
-  <section class="blocs">
-
-    <div class="bloc">
-
-      <div class="bloc-icon">
-        🙏
-      </div>
-
-      <h3>
-        La foi
-      </h3>
-
-      <p>
-        La foi, c'est aussi continuer à avancer
-        même lorsque l'on ne voit pas encore
-        ce qui nous attend.
-      </p>
-
-    </div>
-
-
-    <div class="bloc">
-
-      <div class="bloc-icon">
-        ❤️
-      </div>
-
-      <h3>
-        Jésus t'aime
-      </h3>
-
-      <p>
-        Peu importe où tu en es aujourd'hui,
-        tu peux toujours revenir vers Dieu.
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- CITATION -->
-
-  <div class="citation">
-
-    « Remets ton sort à l'Éternel,
-    et il te soutiendra. »
-
-    <br>
-
-    <strong>
-      — Psaume 55:23
-    </strong>
-
-  </div>
-
-
-  <!-- FOOTER -->
-
-  <footer>
-
-    <div class="mini-croix">
-      ✝
-    </div>
-
-    Jésus t'aime — Que sa paix t'accompagne.
-
-  </footer>
-
-</div>
-
-
-<div>
-  ce site fais partie de l'association vie-et-lumière.
-</div>
-
-
-<!-- =========================
-     TON FICHIER DE VERSETS
-     ========================= -->
-
-<script src="verset.js"></script>
-
-
-<!-- =========================
-     SCRIPT DU MENU
-     ========================= -->
-
+  <!-- =========================
+       IMPORT DU FICHIER JS
+  ========================= -->
+  <script src="histoires.js"></script>
+
+  <!-- =========================
+       LOGIQUE JAVASCRIPT
+  ========================= -->
 <script>
+ /* =========================
+   UNE HISTOIRE PAR JOUR
+========================= */
 
-  const menuBtn = document.getElementById("menu-btn");
-  const menu = document.getElementById("menu");
-  const menuClose = document.getElementById("menu-close");
-  const menuOverlay = document.getElementById("menu-overlay");
+function obtenirJourFrance() {
+  const maintenant = new Date();
 
-  function ouvrirMenu() {
+  const parties = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(maintenant);
 
-    menu.classList.add("open");
-    menuOverlay.classList.add("open");
+  let jour = 0;
+  let mois = 0;
+  let annee = 0;
 
-    menuBtn.setAttribute("aria-expanded", "true");
-
-  }
-
-  function fermerMenu() {
-
-    menu.classList.remove("open");
-    menuOverlay.classList.remove("open");
-
-    menuBtn.setAttribute("aria-expanded", "false");
-
-  }
-
-  menuBtn.addEventListener("click", ouvrirMenu);
-
-  menuClose.addEventListener("click", fermerMenu);
-
-  menuOverlay.addEventListener("click", fermerMenu);
-
-
-  /* =========================
-     NAVIGATION FLUIDE
-     ========================= */
-
-  const liensMenu = document.querySelectorAll(".menu-content a");
-
-  liensMenu.forEach(lien => {
-
-    lien.addEventListener("click", function(event) {
-
-      event.preventDefault();
-
-      const destination = this.href;
-
-      fermerMenu();
-
-      setTimeout(() => {
-
-        window.location.href = destination;
-
-      }, 300);
-
-    });
-
+  parties.forEach(partie => {
+    if (partie.type === "day") jour = Number(partie.value);
+    if (partie.type === "month") mois = Number(partie.value);
+    if (partie.type === "year") annee = Number(partie.value);
   });
 
+  return { jour, mois, annee };
+}
 
-  /* =========================
-     FERMER AVEC LA TOUCHE ÉCHAP
-     ========================= */
-
-  document.addEventListener("keydown", function(event) {
-
-    if (event.key === "Escape") {
-      fermerMenu();
-    }
-
-  });
 
 /* =========================
-   ANIMATION DU VERSET
-   ========================= */
+   NUMÉRO DU JOUR
+========================= */
 
-const versetTexte =
-  document.getElementById("verset-texte");
+function calculerNumeroJour() {
+  const date = obtenirJourFrance();
 
-const versetRef =
-  document.getElementById("verset-ref");
+  const debut = new Date(date.annee, 0, 0);
+  const actuel = new Date(
+    date.annee,
+    date.mois - 1,
+    date.jour
+  );
 
+  const difference = actuel - debut;
 
-const observateurVerset =
-  new MutationObserver(() => {
+  return Math.floor(
+    difference / (1000 * 60 * 60 * 24)
+  );
+}
 
-    versetTexte.classList.add("changement");
-    versetRef.classList.add("changement");
-
-    setTimeout(() => {
-
-      versetTexte.classList.remove("changement");
-      versetRef.classList.remove("changement");
-
-    }, 50);
-
-  });
-
-
-observateurVerset.observe(
-  versetTexte,
-  {
-    childList: true,
-    subtree: true,
-    characterData: true
-  }
-);
-
-
-observateurVerset.observe(
-  versetRef,
-  {
-    childList: true,
-    subtree: true,
-    characterData: true
-  }
-);
 
 /* =========================
-   GESTION DU BOUTON COPIER
-   ========================= */
+   AFFICHER L'HISTOIRE
+========================= */
 
-const boutonCopier = document.getElementById("copier-verset");
+function afficherHistoireDuJour() {
 
-boutonCopier.addEventListener("click", () => {
-  const texte = versetTexte.innerText;
-  const ref = versetRef.innerText;
-  
-  const texteACopier = ref ? `"${texte}" — ${ref}` : texte;
+  if (typeof histoires === "undefined" || histoires.length === 0) {
 
-  navigator.clipboard.writeText(texteACopier).then(() => {
-    boutonCopier.innerText = "✓ Copié !";
-    setTimeout(() => {
-      boutonCopier.innerText = "📋 Copier le verset";
-    }, 2000);
-  });
+    document.getElementById("titre-histoire").textContent = "Erreur";
+
+    document.getElementById("texte-histoire").textContent =
+      "Impossible de charger le fichier histoires.js.";
+
+    return;
+  }
+
+  const numeroJour = calculerNumeroJour();
+
+  /*
+     Le même jour = toujours la même histoire.
+     Le jour suivant = histoire suivante.
+  */
+  const index = (numeroJour - 1) % histoires.length;
+
+  const histoire = histoires[index];
+
+
+  /* TITRE */
+  document.getElementById("titre-histoire").textContent =
+    histoire.titre;
+
+
+  /* PETITE HISTOIRE */
+  document.getElementById("texte-histoire").textContent =
+    histoire.texte;
+
+
+  /* RÉFÉRENCE BIBLIQUE */
+  document.getElementById("reference").textContent =
+    histoire.reference;
+
+
+  /* TEXTE BIBLIQUE COMPLET */
+  document.getElementById("texte-biblique").textContent =
+    histoire.biblique;
+
+
+  /*
+     Ton fichier histoires.js n'a pas de propriété
+     "encouragement".
+
+     On évite donc d'afficher "undefined".
+  */
+  const encouragement =
+    document.getElementById("encouragement");
+
+  if (histoire.encouragement) {
+    encouragement.textContent = histoire.encouragement;
+  } else {
+    encouragement.textContent = "";
+    encouragement.style.display = "none";
+  }
+}
+
+
+/* =========================
+   BOUTON « LIRE »
+========================= */
+
+const boutonLire = document.getElementById("bouton-lire");
+const texteBiblique = document.getElementById("texte-biblique");
+
+boutonLire.addEventListener("click", function () {
+
+  const estCache =
+    texteBiblique.style.display === "none" ||
+    texteBiblique.style.display === "";
+
+  if (estCache) {
+
+    texteBiblique.style.display = "block";
+
+    boutonLire.textContent = "Fermer";
+
+  } else {
+
+    texteBiblique.style.display = "none";
+
+    boutonLire.textContent = "Lire";
+  }
+
 });
 
-</script>
+
+/* =========================
+   CHARGEMENT INITIAL
+========================= */
+
+afficherHistoireDuJour();
+
+
+/* =========================
+   CHANGEMENT AUTOMATIQUE
+   À MINUIT EN FRANCE
+========================= */
+
+let dernierJour = calculerNumeroJour();
+
+setInterval(function () {
+
+  const nouveauJour = calculerNumeroJour();
+
+  /*
+     Si le numéro du jour a changé,
+     on affiche automatiquement la nouvelle histoire.
+  */
+  if (nouveauJour !== dernierJour) {
+
+    dernierJour = nouveauJour;
+
+    afficherHistoireDuJour();
+
+    /*
+       On referme également le texte biblique
+       pour la nouvelle histoire.
+    */
+    texteBiblique.style.display = "none";
+    boutonLire.textContent = "Lire";
+  }
+
+}, 1000);
+
+
+/* =========================
+   MENU HAMBURGER
+========================= */
+
+const menuBtn = document.getElementById("menu-btn");
+const menu = document.getElementById("menu");
+const menuClose = document.getElementById("menu-close");
+const menuOverlay = document.getElementById("menu-overlay");
+
+
+function ouvrirMenu() {
+  menu.classList.add("open");
+  menuOverlay.classList.add("open");
+  menuBtn.setAttribute("aria-expanded", "true");
+}
+
+
+function fermerMenu() {
+  menu.classList.remove("open");
+  menuOverlay.classList.remove("open");
+  menuBtn.setAttribute("aria-expanded", "false");
+}
+
+
+menuBtn.addEventListener("click", ouvrirMenu);
+
+menuClose.addEventListener("click", fermerMenu);
+
+menuOverlay.addEventListener("click", fermerMenu);
+
+
+document.addEventListener("keydown", function(event) {
+
+  if (event.key === "Escape") {
+    fermerMenu();
+  }
+
+});
+
+
+/* Fermer le menu lorsqu'on clique sur un lien */
+
+const liensMenu =
+  document.querySelectorAll(".menu-content a");
+
+liensMenu.forEach(function(lien) {
+
+  lien.addEventListener("click", function() {
+    fermerMenu();
+  });
+
+}); </script>
 
 </body>
 </html>
