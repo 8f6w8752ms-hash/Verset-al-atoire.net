@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap');
+
+/* =====================================================
+   THÈMES DU SITE  (le thème « classique » = aucun style ici)
+   Le thème est choisi sur la page theme.html (theme.js)
+   ===================================================== */
+
+html[data-theme="nuit"] {
+  --fond: radial-gradient(ellipse 80% 45% at 50% 105%, rgba(255,184,102,0.40), transparent 70%), linear-gradient(180deg,#0c1736 0%,#1a2a5e 55%,#3a3066 100%);
+  --base: #0c1736; --texte: #f3ead8; --doux: #d3c8ad; --accent: #f2c66d;
+  --titre1: #fff6d9; --titre2: #e8b85a; --titre-doux: #fff0cf; --verset: #ffffff;
+  --verre: rgba(255,255,255,0.06); --verre-bord: rgba(255,255,255,0.14);
+  --carte: rgba(8,14,38,0.5); --carte-bord: rgba(242,198,109,0.4);
+  --ombre: rgba(0,0,0,0.35); --lueur: rgba(242,198,109,0.28); --fav: #ffc2c2;
+  --btn1: linear-gradient(135deg,#fbdc8b,#e0a432); --btn1-texte: #2a1c05;
+  --btn2: rgba(255,255,255,0.07); --btn2-texte: #f6e3b4; --btn2-bord: rgba(242,198,109,0.5);
+  --petit: rgba(255,255,255,0.08); --petit-texte: #f1e3c0; --petit-bord: rgba(242,198,109,0.38); --petit-hover: rgba(242,198,109,0.2);
+  --menu-fond: rgba(14,24,56,0.98); --menu-texte: #e9dfc6; --menu-titre: #f6e3b4; --menu-doux: #aaa28c;
+  --menu-icone: rgba(242,198,109,0.15); --menu-hover: rgba(242,198,109,0.13);
+  --overlay: rgba(5,9,24,0.55); --burger: rgba(255,255,255,0.1);
+}
+
+html[data-theme="jour"] {
+  --fond: radial-gradient(circle at 88% 5%, #fffbe0 0, rgba(255,232,140,0.85) 5%, rgba(255,222,120,0.35) 15%, transparent 34%), linear-gradient(180deg,#7ec3f2 0%,#bfe3fb 45%,#fff4dc 100%);
+  --base: #7ec3f2; --texte: #1f3a5f; --doux: #44688f; --accent: #c26d00;
+  --titre1: #17457f; --titre2: #2f7fd0; --titre-doux: #1b4f8f; --verset: #17324f;
+  --verre: rgba(255,255,255,0.45); --verre-bord: rgba(255,255,255,0.85);
+  --carte: rgba(255,255,255,0.74); --carte-bord: rgba(255,255,255,0.95);
+  --ombre: rgba(40,90,150,0.22); --lueur: rgba(255,190,70,0.35); --fav: #c62828;
+  --btn1: linear-gradient(135deg,#ffd35f,#ff9f1c); --btn1-texte: #4a2a00;
+  --btn2: rgba(255,255,255,0.75); --btn2-texte: #1b4f8f; --btn2-bord: rgba(47,127,208,0.55);
+  --petit: rgba(255,255,255,0.7); --petit-texte: #1b4f8f; --petit-bord: rgba(47,127,208,0.4); --petit-hover: #ffffff;
+  --menu-fond: rgba(255,255,255,0.97); --menu-texte: #1f3a5f; --menu-titre: #1b4f8f; --menu-doux: #5a7a9c;
+  --menu-icone: rgba(47,127,208,0.12); --menu-hover: rgba(47,127,208,0.1);
+  --overlay: rgba(30,60,100,0.3); --burger: rgba(255,255,255,0.8);
+}
+
+/* ----- décors : étoiles (nuit) / nuages (jour) ----- */
+html[data-theme="nuit"] body::before, html[data-theme="jour"] body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+
+html[data-theme="nuit"] body::before {
+  background-image:
+    radial-gradient(circle 2px at 12% 18%, #fff 0, transparent 100%),
+    radial-gradient(circle 1.5px at 28% 62%, #fff 0, transparent 100%),
+    radial-gradient(circle 2.4px at 44% 12%, #ffeab5 0, transparent 100%),
+    radial-gradient(circle 1.5px at 63% 35%, #fff 0, transparent 100%),
+    radial-gradient(circle 2px at 78% 20%, #fff 0, transparent 100%),
+    radial-gradient(circle 1.5px at 90% 55%, #ffeab5 0, transparent 100%),
+    radial-gradient(circle 1.8px at 8% 80%, #fff 0, transparent 100%),
+    radial-gradient(circle 1.5px at 52% 78%, #fff 0, transparent 100%),
+    radial-gradient(circle 2px at 85% 88%, #fff 0, transparent 100%);
+  animation: scintille 5s ease-in-out infinite alternate;
+}
+
+html[data-theme="jour"] body::before {
+  background-image:
+    radial-gradient(ellipse 240px 64px at 16% 16%, rgba(255,255,255,0.95), transparent 72%),
+    radial-gradient(ellipse 170px 46px at 30% 21%, rgba(255,255,255,0.8), transparent 72%),
+    radial-gradient(ellipse 300px 76px at 62% 34%, rgba(255,255,255,0.85), transparent 72%),
+    radial-gradient(ellipse 200px 54px at 80% 46%, rgba(255,255,255,0.7), transparent 72%),
+    radial-gradient(ellipse 260px 70px at 10% 70%, rgba(255,255,255,0.75), transparent 72%),
+    radial-gradient(ellipse 220px 60px at 70% 84%, rgba(255,255,255,0.8), transparent 72%);
+  animation: derive 40s ease-in-out infinite alternate;
+}
+
+@keyframes scintille { from { opacity: 0.45; } to { opacity: 1; } }
+@keyframes derive { from { transform: translateX(-30px); } to { transform: translateX(30px); } }
+@keyframes apparition { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-themed] body::before, html[data-themed] .site { animation: none; }
+}
+
+/* ----- base ----- */
+html[data-themed] { background: var(--base); }
+html[data-themed] body { background: var(--fond); background-attachment: fixed; color: var(--texte); }
+html[data-themed] .site { position: relative; z-index: 1; animation: apparition 0.8s ease both; }
+
+html[data-themed] h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600;
+  font-size: clamp(2.8rem, 8vw, 4.6rem); letter-spacing: 2px;
+  background: linear-gradient(180deg, var(--titre1), var(--titre2));
+  -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;
+}
+html[data-themed] .sous-titre { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; color: var(--doux); }
+html[data-themed] .croix { background: var(--verre); border: 1px solid var(--carte-bord); color: var(--accent); box-shadow: 0 0 30px var(--lueur); text-shadow: 0 0 14px var(--lueur); }
+html[data-themed] header::after { background: var(--accent); }
+html[data-themed] .navigation { color: var(--doux); }
+html[data-themed] .navigation span::before { color: var(--accent); }
+
+/* ----- accueil ----- */
+html[data-themed] .hero { background: var(--verre); border: 1px solid var(--verre-bord); border-radius: 34px; box-shadow: 0 30px 80px var(--ombre); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+html[data-themed] .hero::before, html[data-themed] .hero::after { color: var(--accent); }
+html[data-themed] .sur-titre { color: var(--accent); }
+html[data-themed] .hero h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: clamp(2rem, 6vw, 3rem); color: var(--titre-doux); }
+html[data-themed] .hero-intro { color: var(--doux); }
+html[data-themed] .carte-verset { background: var(--carte); border: 1px solid var(--carte-bord); border-radius: 26px; box-shadow: 0 0 40px var(--lueur), 0 14px 40px var(--ombre); }
+html[data-themed] .guillemet { color: var(--accent); font-family: 'Cormorant Garamond', Georgia, serif; font-size: 4.5rem; }
+html[data-themed] #verset-texte { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: clamp(1.5rem, 4.4vw, 2.1rem); line-height: 1.5; color: var(--verset); }
+html[data-themed] #verset-ref { color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem; }
+
+html[data-themed] .bouton-copier, html[data-themed] .bouton-image, html[data-themed] .actions-verset button,
+html[data-themed] .actions-favori button, html[data-themed] .bouton-lire {
+  background: var(--petit); color: var(--petit-texte); border: 1px solid var(--petit-bord); box-shadow: none;
+}
+html[data-themed] .bouton-copier:hover, html[data-themed] .bouton-image:hover, html[data-themed] .actions-verset button:hover,
+html[data-themed] .actions-favori button:hover, html[data-themed] .bouton-lire:hover { background: var(--petit-hover); box-shadow: none; }
+html[data-themed] .actions-verset .bouton-favori.actif, html[data-themed] .actions-favori .retirer {
+  background: rgba(255,120,120,0.18); border-color: rgba(255,120,120,0.55); color: var(--fav);
+}
+
+html[data-themed] .boutons button { font-size: 1.05rem; }
+html[data-themed] .boutons #tirer-verset, html[data-themed] .lien-accueil { background: var(--btn1); color: var(--btn1-texte); box-shadow: 0 0 28px var(--lueur), 0 8px 20px var(--ombre); }
+html[data-themed] .boutons #verset-jour { background: var(--btn2); color: var(--btn2-texte); border: 1px solid var(--btn2-bord); box-shadow: 0 8px 20px var(--ombre); }
+html[data-themed] .boutons button:hover { box-shadow: 0 0 36px var(--lueur), 0 12px 26px var(--ombre); }
+
+html[data-themed] .separateur { color: var(--accent); }
+html[data-themed] .separateur::before, html[data-themed] .separateur::after { background: var(--carte-bord); }
+html[data-themed] .bloc { background: var(--verre); border: 1px solid var(--verre-bord); box-shadow: 0 12px 34px var(--ombre); }
+html[data-themed] .bloc h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.6rem; color: var(--titre-doux); }
+html[data-themed] .bloc p, html[data-themed] .vide { color: var(--doux); }
+html[data-themed] .citation { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; color: var(--texte); border-color: var(--accent); }
+html[data-themed] .citation strong { color: var(--accent); }
+html[data-themed] footer { color: var(--doux); }
+html[data-themed] footer .mini-croix { color: var(--accent); }
+
+/* ----- favoris ----- */
+html[data-themed] .liste-favoris .carte-verset p { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(1.3rem, 3.8vw, 1.7rem); color: var(--verset); }
+html[data-themed] .liste-favoris .carte-verset p.ref { font-family: Georgia, serif; font-size: 0.95rem; color: var(--accent); }
+
+/* ----- un jour, une histoire ----- */
+html[data-themed] .histoire { background: var(--carte); border: 1px solid var(--carte-bord); box-shadow: 0 30px 70px var(--ombre); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+html[data-themed] .histoire::before { background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+html[data-themed] .histoire::after { color: var(--accent); }
+html[data-themed] .histoire h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: clamp(1.9rem, 5vw, 2.6rem); color: var(--titre-doux); }
+html[data-themed] .histoire h2::after { background: var(--accent); }
+html[data-themed] #texte-histoire, html[data-themed] #texte-biblique { color: var(--texte); }
+html[data-themed] #texte-biblique { border-top-color: var(--carte-bord); }
+html[data-themed] .encouragement { background: var(--verre); border-left-color: var(--accent); border-right-color: var(--accent); color: var(--titre-doux); }
+html[data-themed] .reference { color: var(--accent); }
+
+/* ----- menu hamburger ----- */
+html[data-themed] .menu-btn { background: var(--burger); border: 1px solid var(--carte-bord); box-shadow: 0 8px 22px var(--ombre); }
+html[data-themed] .menu-btn span { background: var(--menu-titre); }
+html[data-themed] .menu-overlay { background: var(--overlay); }
+html[data-themed] .menu { background: var(--menu-fond); border-right: 1px solid var(--carte-bord); box-shadow: 8px 0 40px var(--ombre); }
+html[data-themed] .menu-header { color: var(--menu-titre); border-bottom: 1px solid var(--carte-bord); }
+html[data-themed] .menu-close { color: var(--menu-titre); }
+html[data-themed] .menu-close:hover, html[data-themed] .menu-content a:hover { background: var(--menu-hover); }
+html[data-themed] .menu-content a { color: var(--menu-texte); }
+html[data-themed] .menu-icon { background: var(--menu-icone); }
+html[data-themed] .menu-content strong { color: var(--menu-titre); }
+html[data-themed] .menu-content small { color: var(--menu-doux); }
