@@ -838,6 +838,11 @@ body {
     }
   }
 </style>
+
+
+
+<link rel="stylesheet" href="themes.css">
+<script src="theme.js"></script>
 </head>
 
 <body>
@@ -920,6 +925,14 @@ body {
         <span>
           <strong>Mes favoris</strong>
           <small>Retrouve les versets que tu as gardés.</small>
+        </span>
+      </a>
+
+      <a href="theme.html">
+        <span class="menu-icon">🎨</span>
+        <span>
+          <strong>Thème</strong>
+          <small>Change l'apparence du site : nuit, jour…</small>
         </span>
       </a>
 
@@ -1377,16 +1390,15 @@ if (boutonCopier && versetTexte && versetRef) {
   const btnShare = document.getElementById("image-partager");
   const btnClose = document.getElementById("image-fermer");
 
-  const FOND_SURLIGNE = 4;
+  const FOND_SURLIGNE = 3;
   let fondActuel = 0;
   let couleurTexte = "#ffffff";
   let couleurSurlignage = "#1f4aa0";
 
   const fondsInfo = [
-    { nom: "Lever de soleil", css: "linear-gradient(160deg,#1f2a56,#e8956a 60%,#fde9a8)" },
-    { nom: "Nuit étoilée",    css: "linear-gradient(160deg,#070d24,#44366b)" },
-    { nom: "Montagnes",       css: "linear-gradient(160deg,#4a86b5,#bcdceb 60%,#f4e9d0)" },
-    { nom: "Ciel doux",       css: "linear-gradient(160deg,#5d8fcf,#e0a97f 60%,#f7d9a6)" },
+    { nom: "Nuit de lumière", css: "linear-gradient(160deg,#0c1736,#1a2a5e 55%,#3a3066)" },
+    { nom: "Jour lumineux",   css: "linear-gradient(160deg,#7ec3f2,#bfe3fb 55%,#fff4dc)" },
+    { nom: "Parchemin",       css: "linear-gradient(160deg,#fdfaf3,#f3ecd8 55%,#eaddb8)" },
     { nom: "Blanc surligné",  css: "linear-gradient(180deg,#fff 0 28%,#1f4aa0 28% 64%,#fff 64%)" }
   ];
 
@@ -1457,73 +1469,44 @@ if (boutonCopier && versetTexte && versetRef) {
 
   const fonds = [
 
-    function lever() {
-      degrade([[0, "#1f2a56"], [0.35, "#6b5a92"], [0.6, "#e8956a"], [0.82, "#f6c76a"], [1, "#fde9a8"]]);
-      lueur(W / 2, H * 0.7, 700, "rgba(255,240,180,0.95)");
-      ctx.save();
-      ctx.translate(W / 2, H * 0.7);
-      for (let i = 0; i < 18; i++) {
-        ctx.rotate((Math.PI * 2) / 18);
-        ctx.fillStyle = "rgba(255,240,190,0.07)";
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(-45, -1500);
-        ctx.lineTo(45, -1500);
-        ctx.closePath();
-        ctx.fill();
-      }
-      ctx.restore();
-      crete("rgba(140,80,70,0.55)", H * 0.78, 50, 11);
-      crete("rgba(90,50,60,0.8)", H * 0.86, 40, 22);
-      crete("#3b2a3a", H * 0.94, 30, 33);
-    },
-
+    /* 0 : Nuit de lumière */
     function nuit() {
-      degrade([[0, "#070d24"], [0.5, "#1c2f5e"], [1, "#44366b"]]);
+      degrade([[0, "#0c1736"], [0.55, "#1a2a5e"], [1, "#3a3066"]]);
+      lueur(W / 2, H * 1.02, 850, "rgba(255,184,102,0.45)");
       const r = rng(5);
-      for (let i = 0; i < 220; i++) {
-        const x = r() * W, y = r() * H * 0.8, t = r();
-        ctx.fillStyle = "rgba(255,255,240," + (0.3 + t * 0.7) + ")";
+      for (let i = 0; i < 230; i++) {
+        const x = r() * W, y = r() * H * 0.85, t = r();
+        ctx.fillStyle = (t > 0.8 ? "rgba(255,234,181," : "rgba(255,255,255,") + (0.35 + t * 0.65) + ")";
         ctx.beginPath();
-        ctx.arc(x, y, 0.8 + t * 2.2, 0, Math.PI * 2);
+        ctx.arc(x, y, 0.8 + t * 2.3, 0, Math.PI * 2);
         ctx.fill();
       }
-      lueur(W * 0.78, H * 0.16, 260, "rgba(255,245,210,0.55)");
-      ctx.fillStyle = "#fff6dc";
+    },
+
+    /* 1 : Jour lumineux */
+    function jour() {
+      degrade([[0, "#7ec3f2"], [0.45, "#bfe3fb"], [1, "#fff4dc"]]);
+      lueur(W * 0.86, H * 0.07, 560, "rgba(255,236,150,0.95)");
+      ctx.fillStyle = "#fffbe0";
       ctx.beginPath();
-      ctx.arc(W * 0.78, H * 0.16, 52, 0, Math.PI * 2);
+      ctx.arc(W * 0.86, H * 0.07, 62, 0, Math.PI * 2);
       ctx.fill();
-      crete("rgba(20,24,56,0.85)", H * 0.84, 45, 44);
-      crete("#0a0e22", H * 0.93, 30, 55);
+      nuages(rng(8), 7, 0.5);
     },
 
-    function montagnes() {
-      degrade([[0, "#4a86b5"], [0.55, "#bcdceb"], [1, "#f4e9d0"]]);
-      lueur(W * 0.3, H * 0.3, 600, "rgba(255,255,255,0.55)");
-      nuages(rng(8), 5, 0.28);
-      crete("rgba(120,150,185,0.6)", H * 0.62, 90, 66);
-      crete("rgba(80,115,150,0.8)", H * 0.72, 70, 77);
-      crete("rgba(45,80,100,0.95)", H * 0.82, 55, 88);
-      degrade_lac();
-    },
-
-    function ciel() {
-      degrade([[0, "#5d8fcf"], [0.5, "#e0a97f"], [1, "#f7d9a6"]]);
-      nuages(rng(3), 9, 0.4);
-      lueur(W * 0.5, H * 0.85, 800, "rgba(255,232,170,0.6)");
+    /* 2 : Parchemin */
+    function parchemin() {
+      degrade([[0, "#fdfaf3"], [0.5, "#f3ecd8"], [1, "#eaddb8"]]);
+      lueur(W * 0.2, H * 0.1, 650, "rgba(255,255,255,0.6)");
+      lueur(W * 0.85, H * 0.92, 650, "rgba(183,139,62,0.2)");
+      ctx.strokeStyle = "rgba(184,134,11,0.5)";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(40, 40, W - 80, H - 80);
+      ctx.lineWidth = 1;
+      ctx.strokeRect(56, 56, W - 112, H - 112);
     }
 
   ];
-
-  function degrade_lac() {
-    const g = ctx.createLinearGradient(0, H * 0.9, 0, H);
-    g.addColorStop(0, "rgba(120,170,200,0.9)");
-    g.addColorStop(1, "rgba(60,110,140,1)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, H * 0.9, W, H * 0.1);
-  }
-
-  /* ----- Texte ----- */
 
   function decouper(texte, largeur) {
     const mots = texte.split(/\s+/);
@@ -1631,8 +1614,11 @@ if (boutonCopier && versetTexte && versetRef) {
 
     /* voile sombre pour que le texte reste lisible */
     const v = ctx.createLinearGradient(0, 0, 0, H);
+    const fondClair = fondActuel === 1 || fondActuel === 2;
     const base = texteSombre ? "255,255,255" : "0,0,0";
-    const a = texteSombre ? [0.42, 0.5, 0.42] : [0.30, 0.38, 0.30];
+    const a = texteSombre
+      ? (fondClair ? [0.12, 0.18, 0.12] : [0.42, 0.5, 0.42])
+      : (fondClair ? [0.42, 0.5, 0.42] : [0.30, 0.38, 0.30]);
     v.addColorStop(0, "rgba(" + base + "," + a[0] + ")");
     v.addColorStop(0.5, "rgba(" + base + "," + a[1] + ")");
     v.addColorStop(1, "rgba(" + base + "," + a[2] + ")");
@@ -1717,6 +1703,7 @@ if (boutonCopier && versetTexte && versetRef) {
     b.setAttribute("aria-label", f.nom);
     b.addEventListener("click", () => {
       fondActuel = i;
+      if (i !== FOND_SURLIGNE) couleurTexte = (i === 0) ? "#ffffff" : "#111111";
       majReglages();
       dessiner();
     });
