@@ -6,7 +6,7 @@
 
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 
-<title>jesus t'aime</title>
+<title>acceuille</title>
 
 <style>
  html,
@@ -470,9 +470,96 @@ body {
 
   #image-canvas {
     max-width: 100%;
-    max-height: 68vh;
+    max-height: 56vh;
     border-radius: 14px;
     box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+  }
+
+
+  .image-reglages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .pastilles {
+    display: flex;
+    gap: 0.9rem;
+  }
+
+  .pastille {
+    min-width: 0;
+    width: 32px;
+    max-width: none;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.55);
+    box-shadow: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .pastille:hover { transform: scale(1.1); box-shadow: none; }
+
+  .pastille.actif {
+    border-color: #fff;
+    transform: scale(1.12);
+    box-shadow: 0 0 0 3px #d4a63a;
+  }
+
+  .reglages-texte {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.7rem;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+
+  .pastille-texte {
+    min-width: 0;
+    width: 34px;
+    max-width: none;
+    height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.55);
+    box-shadow: none;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .pastille-texte:hover { box-shadow: none; }
+  .pastille-texte.blanc { background: #fff; color: #111; }
+  .pastille-texte.noir  { background: #111; color: #fff; }
+
+  .pastille-texte.actif {
+    border-color: #fff;
+    box-shadow: 0 0 0 3px #d4a63a;
+  }
+
+  .surlignage {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.4rem;
+  }
+
+  .surlignage[hidden] { display: none; }
+
+  .surlignage input[type="color"] {
+    width: 40px;
+    height: 34px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    background: none;
+    cursor: pointer;
   }
 
   .image-actions {
@@ -1248,8 +1335,22 @@ if (boutonCopier && versetTexte && versetRef) {
 
 <div class="image-overlay" id="image-overlay">
   <canvas id="image-canvas" width="1080" height="1350"></canvas>
+  <div class="image-reglages">
+    <div class="pastilles" id="image-pastilles" role="group" aria-label="Arrière-plan"></div>
+
+    <div class="reglages-texte">
+      <span>Texte</span>
+      <button id="texte-blanc" class="pastille-texte blanc actif" aria-label="Texte blanc">A</button>
+      <button id="texte-noir" class="pastille-texte noir" aria-label="Texte noir">A</button>
+
+      <label class="surlignage" id="surlignage-label" hidden>
+        <span>Surlignage</span>
+        <input type="color" id="surlignage-couleur" value="#1f4aa0" aria-label="Couleur du surlignage">
+      </label>
+    </div>
+  </div>
+
   <div class="image-actions">
-    <button id="image-fond" class="secondaire">🎨 Changer de fond</button>
     <button id="image-telecharger">⬇️ Télécharger</button>
     <button id="image-partager" class="secondaire" hidden>📤 Partager</button>
     <button id="image-fermer" class="secondaire">Fermer</button>
@@ -1267,12 +1368,27 @@ if (boutonCopier && versetTexte && versetRef) {
   const ctx      = canvas.getContext("2d");
   const refEl    = document.getElementById("verset-ref");
   const texteEl  = document.getElementById("verset-texte");
-  const btnFond  = document.getElementById("image-fond");
+  const conteneurPastilles = document.getElementById("image-pastilles");
+  const btnTexteBlanc = document.getElementById("texte-blanc");
+  const btnTexteNoir  = document.getElementById("texte-noir");
+  const labelSurlignage = document.getElementById("surlignage-label");
+  const inputSurlignage = document.getElementById("surlignage-couleur");
   const btnDl    = document.getElementById("image-telecharger");
   const btnShare = document.getElementById("image-partager");
   const btnClose = document.getElementById("image-fermer");
 
+  const FOND_SURLIGNE = 4;
   let fondActuel = 0;
+  let couleurTexte = "#ffffff";
+  let couleurSurlignage = "#1f4aa0";
+
+  const fondsInfo = [
+    { nom: "Lever de soleil", css: "linear-gradient(160deg,#1f2a56,#e8956a 60%,#fde9a8)" },
+    { nom: "Nuit étoilée",    css: "linear-gradient(160deg,#070d24,#44366b)" },
+    { nom: "Montagnes",       css: "linear-gradient(160deg,#4a86b5,#bcdceb 60%,#f4e9d0)" },
+    { nom: "Ciel doux",       css: "linear-gradient(160deg,#5d8fcf,#e0a97f 60%,#f7d9a6)" },
+    { nom: "Blanc surligné",  css: "linear-gradient(180deg,#fff 0 28%,#1f4aa0 28% 64%,#fff 64%)" }
+  ];
 
   /* Le bouton n'apparaît qu'une fois un verset affiché */
   function majBouton() {
@@ -1426,15 +1542,100 @@ if (boutonCopier && versetTexte && versetRef) {
     return lignes;
   }
 
+  function luminance(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  }
+
+  /* Fond blanc, texte surligné ligne par ligne */
+  function dessinerSurligne(texte, ref) {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, W, H);
+
+    const marge = 90, pad = 14;
+    const largeur = W - marge * 2 - pad * 2;
+    const police = t => t + "px Garamond, 'EB Garamond', 'Cormorant Garamond', Georgia, 'Times New Roman', serif";
+
+    let t = 84, lignes, pas;
+    while (true) {
+      ctx.font = police(t);
+      lignes = decouper(texte, largeur);
+      pas = t * 1.75;
+      if (lignes.length * pas <= H * 0.6 || t <= 30) break;
+      t -= 2;
+    }
+
+    const hauteurRect = t * 1.3;
+    const total = (lignes.length - 1) * pas + hauteurRect + 95;
+    const y0 = (H - total) / 2;
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+
+    lignes.forEach((l, i) => {
+      const y = y0 + i * pas;
+      ctx.font = police(t);
+      const w = ctx.measureText(l).width;
+
+      ctx.shadowColor = "transparent";
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.fillStyle = couleurSurlignage;
+      ctx.fillRect(marge, y, w + pad * 2, hauteurRect);
+
+      if (couleurTexte === "#ffffff") {
+        ctx.shadowColor = "rgba(0,0,0,0.7)";
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+      }
+      ctx.fillStyle = couleurTexte;
+      ctx.fillText(l, marge + pad, y + hauteurRect / 2 + t * 0.28);
+    });
+
+    ctx.shadowColor = "transparent";
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    /* référence, dans la couleur du surlignage (grisée si elle est trop claire) */
+    const couleurRef = luminance(couleurSurlignage) > 0.78 ? "#555555" : couleurSurlignage;
+    const yRef = y0 + (lignes.length - 1) * pas + hauteurRect + 90;
+    ctx.fillStyle = couleurRef;
+    ctx.font = "bold 58px 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText(ref, marge + 4, yRef);
+
+    /* signature discrète */
+    ctx.textAlign = "center";
+    ctx.globalAlpha = 0.8;
+    ctx.font = "italic 40px Georgia, serif";
+    ctx.fillText("J\u00E9sus t\u2019aime", W / 2, H - 70);
+    ctx.globalAlpha = 1;
+  }
+
   function dessiner() {
     ctx.clearRect(0, 0, W, H);
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    if (fondActuel === FOND_SURLIGNE) {
+      dessinerSurligne(texteEl.textContent.trim(), refEl.textContent.trim());
+      return;
+    }
+
+    const texteSombre = couleurTexte !== "#ffffff";
+    const or = texteSombre ? "rgba(138,98,8,0.95)" : "rgba(240,200,110,0.95)";
+
     fonds[fondActuel]();
 
     /* voile sombre pour que le texte reste lisible */
     const v = ctx.createLinearGradient(0, 0, 0, H);
-    v.addColorStop(0, "rgba(0,0,0,0.30)");
-    v.addColorStop(0.5, "rgba(0,0,0,0.38)");
-    v.addColorStop(1, "rgba(0,0,0,0.30)");
+    const base = texteSombre ? "255,255,255" : "0,0,0";
+    const a = texteSombre ? [0.42, 0.5, 0.42] : [0.30, 0.38, 0.30];
+    v.addColorStop(0, "rgba(" + base + "," + a[0] + ")");
+    v.addColorStop(0.5, "rgba(" + base + "," + a[1] + ")");
+    v.addColorStop(1, "rgba(" + base + "," + a[2] + ")");
     ctx.fillStyle = v;
     ctx.fillRect(0, 0, W, H);
 
@@ -1457,18 +1658,18 @@ if (boutonCopier && versetTexte && versetRef) {
 
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
-    ctx.shadowColor = "rgba(0,0,0,0.55)";
+    ctx.shadowColor = texteSombre ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)";
     ctx.shadowBlur = 18;
     ctx.shadowOffsetY = 3;
 
     /* croix dorée */
-    ctx.fillStyle = "rgba(240,200,110,0.95)";
+    ctx.fillStyle = or;
     const cx = W / 2, hautCroix = debut - 175;
     ctx.fillRect(cx - 9, hautCroix, 18, 125);
     ctx.fillRect(cx - 38, hautCroix + 34, 76, 18);
 
     /* verset */
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = couleurTexte;
     ctx.font = "italic " + (taille + 2) + "px Georgia, 'Times New Roman', serif";
     lignes.forEach((l, i) => {
       ctx.fillText(l, W / 2, debut + interligne * (i + 0.8));
@@ -1477,7 +1678,7 @@ if (boutonCopier && versetTexte && versetRef) {
     /* filet + référence */
     const yRef = debut + hauteurTexte + 60;
     ctx.shadowBlur = 8;
-    ctx.fillStyle = "rgba(240,200,110,0.9)";
+    ctx.fillStyle = or;
     ctx.fillRect(W / 2 - 60, yRef - 34, 120, 3);
     ctx.font = "bold 48px Georgia, serif";
     ctx.fillText(ref, W / 2, yRef + 30);
@@ -1485,7 +1686,7 @@ if (boutonCopier && versetTexte && versetRef) {
     /* signature discrète */
     ctx.shadowBlur = 0;
     ctx.shadowOffsetY = 0;
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.fillStyle = texteSombre ? "rgba(0,0,0,0.65)" : "rgba(255,255,255,0.7)";
     ctx.font = "italic 40px Georgia, serif";
     ctx.fillText("J\u00E9sus t\u2019aime", W / 2, H - 70);
   }
@@ -1507,10 +1708,47 @@ if (boutonCopier && versetTexte && versetRef) {
   overlay.addEventListener("click", e => { if (e.target === overlay) fermer(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape") fermer(); });
 
-  btnFond.addEventListener("click", () => {
-    fondActuel = (fondActuel + 1) % fonds.length;
+  /* pastilles rondes : une par arrière-plan */
+  const pastilles = fondsInfo.map((f, i) => {
+    const b = document.createElement("button");
+    b.className = "pastille";
+    b.style.background = f.css;
+    b.title = f.nom;
+    b.setAttribute("aria-label", f.nom);
+    b.addEventListener("click", () => {
+      fondActuel = i;
+      majReglages();
+      dessiner();
+    });
+    conteneurPastilles.appendChild(b);
+    return b;
+  });
+
+  function majReglages() {
+    pastilles.forEach((b, i) => b.classList.toggle("actif", i === fondActuel));
+    btnTexteBlanc.classList.toggle("actif", couleurTexte === "#ffffff");
+    btnTexteNoir.classList.toggle("actif", couleurTexte !== "#ffffff");
+    labelSurlignage.hidden = fondActuel !== FOND_SURLIGNE;
+  }
+
+  btnTexteBlanc.addEventListener("click", () => {
+    couleurTexte = "#ffffff";
+    majReglages();
     dessiner();
   });
+
+  btnTexteNoir.addEventListener("click", () => {
+    couleurTexte = "#111111";
+    majReglages();
+    dessiner();
+  });
+
+  inputSurlignage.addEventListener("input", () => {
+    couleurSurlignage = inputSurlignage.value;
+    dessiner();
+  });
+
+  majReglages();
 
   function nomFichier() {
     return "verset-" + refEl.textContent.trim()
