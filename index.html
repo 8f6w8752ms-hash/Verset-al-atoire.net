@@ -476,6 +476,22 @@ body {
   }
 
 
+  #image-astuce-img {
+    max-width: 100%;
+    max-height: 56vh;
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+  }
+
+  #image-astuce {
+    margin: 0;
+    max-width: 320px;
+    text-align: center;
+    color: #fff;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
   .image-reglages {
     display: flex;
     flex-direction: column;
@@ -1348,6 +1364,8 @@ if (boutonCopier && versetTexte && versetRef) {
 
 <div class="image-overlay" id="image-overlay">
   <canvas id="image-canvas" width="1080" height="1350"></canvas>
+  <img id="image-astuce-img" alt="Verset en image" hidden>
+  <p id="image-astuce" hidden>Appuie longuement sur l'image, puis choisis « Ajouter aux photos ».</p>
   <div class="image-reglages">
     <div class="pastilles" id="image-pastilles" role="group" aria-label="Arrière-plan"></div>
 
@@ -1364,6 +1382,7 @@ if (boutonCopier && versetTexte && versetRef) {
   </div>
 
   <div class="image-actions">
+    <button id="image-photos" hidden>📷 Enregistrer dans Photos</button>
     <button id="image-telecharger">⬇️ Télécharger</button>
     <button id="image-partager" class="secondaire" hidden>📤 Partager</button>
     <button id="image-fermer" class="secondaire">Fermer</button>
@@ -1388,6 +1407,9 @@ if (boutonCopier && versetTexte && versetRef) {
   const inputSurlignage = document.getElementById("surlignage-couleur");
   const btnDl    = document.getElementById("image-telecharger");
   const btnShare = document.getElementById("image-partager");
+  const btnPhotos = document.getElementById("image-photos");
+  const imgAstuce = document.getElementById("image-astuce-img");
+  const texteAstuce = document.getElementById("image-astuce");
   const btnClose = document.getElementById("image-fermer");
 
   const FOND_SURLIGNE = 3;
@@ -1595,7 +1617,7 @@ if (boutonCopier && versetTexte && versetRef) {
     ctx.globalAlpha = 1;
   }
 
-  function dessiner() {
+  function dessinerCanvas() {
     ctx.clearRect(0, 0, W, H);
     ctx.shadowColor = "transparent";
     ctx.shadowBlur = 0;
@@ -1744,6 +1766,28 @@ if (boutonCopier && versetTexte && versetRef) {
       .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".png";
   }
 
+  /* iPhone / iPad ? (le téléchargement y finit dans « Fichiers », pas dans Photos) */
+  const estIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || "") ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  /* le fichier PNG est préparé à l'avance : le partage doit partir directement du clic */
+  let fichierPret = null, minuteur = null, version = 0;
+
+  function dessiner() {
+    dessinerCanvas();
+    fichierPret = null;
+    imgAstuce.hidden = true;
+    texteAstuce.hidden = true;
+    canvas.style.display = "";
+    const v = ++version;
+    clearTimeout(minuteur);
+    minuteur = setTimeout(() => {
+      canvas.toBlob(blob => {
+        if (blob && v === version) fichierPret = new File([blob], nomFichier(), { type: "image/png" });
+      }, "image/png");
+    }, 150);
+  }
+
   btnDl.addEventListener("click", () => {
     canvas.toBlob(blob => {
       const url = URL.createObjectURL(blob);
@@ -1757,17 +1801,41 @@ if (boutonCopier && versetTexte && versetRef) {
     }, "image/png");
   });
 
-  /* Partager (si le téléphone le permet : WhatsApp, Instagram...) */
-  if (navigator.share && navigator.canShare) {
-    btnShare.hidden = false;
-    btnShare.addEventListener("click", () => {
-      canvas.toBlob(blob => {
-        const fichier = new File([blob], nomFichier(), { type: "image/png" });
-        if (navigator.canShare({ files: [fichier] })) {
-          navigator.share({ files: [fichier], title: refEl.textContent.trim() }).catch(() => {});
-        }
-      }, "image/png");
+  /* Ouvre la feuille de partage du téléphone (Enregistrer l'image, WhatsApp...) */
+  async function partager(avecTitre) {
+    let fichier = fichierPret;
+    if (!fichier) {
+      const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
+      fichier = new File([blob], nomFichier(), { type: "image/png" });
+    }
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [fichier] })) {
+      try {
+        await navigator.share(avecTitre ? { files: [fichier], title: refEl.textContent.trim() } : { files: [fichier] });
+        return true;
+      } catch (e) {
+        if (e && e.name === "AbortError") return true;
+      }
+    }
+    return false;
+  }
+
+  /* Solution de secours : l'image s'affiche, on l'enregistre par appui long */
+  function afficherAstuce() {
+    imgAstuce.src = canvas.toDataURL("image/png");
+    imgAstuce.hidden = false;
+    texteAstuce.hidden = false;
+    canvas.style.display = "none";
+  }
+
+  if (estIOS) {
+    btnDl.hidden = true;
+    btnPhotos.hidden = false;
+    btnPhotos.addEventListener("click", async () => {
+      if (!(await partager(false))) afficherAstuce();
     });
+  } else if (navigator.share && navigator.canShare) {
+    btnShare.hidden = false;
+    btnShare.addEventListener("click", () => partager(true));
   }
 
 })();
