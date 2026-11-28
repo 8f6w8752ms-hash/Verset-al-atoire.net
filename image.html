@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+
+<title>Créer une image</title>
+
+<style>
+ html,
+body {
+  touch-action: manipulation;
+}
+* {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: linear-gradient(160deg, #fdfaf3 0%, #f3ecd8 50%, #eaddb8 100%);
+    color: #3b2f1e;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .site {
+    width: 100%;
+    max-width: 950px;
+    margin: auto;
+  }
+
+  /* =========================
+     MENU HAMBURGER
+     ========================= */
+
+  .menu-btn {
+    position: fixed;
+    top: 22px;
+    left: 22px;
+
+    width: 52px;
+    height: 52px;
+
+    min-width: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    border-radius: 15px;
+
+    background: rgba(255,255,255,0.72);
+
+    border: 1px solid rgba(184,134,11,0.25);
+
+    box-shadow:
+      0 8px 22px rgba(122,74,26,0.14),
+      inset 0 1px 0 rgba(255,255,255,0.85);
+
+    cursor: pointer;
+    z-index: 1000;
+
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+}
+
+.menu-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+      0 11px 28px rgba(122,74,26,0.18);
+}
+
+  .menu-btn span {
+    width: 21px;
+    height: 2px;
+    border-radius: 5px;
+    background: #7a4a1a;
+  }
+
+  .menu-btn:hover {
+    transform: none;
+    filter: none;
+  }
+
+  /* =========================
+     FOND DU MENU
+     ========================= */
+
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(59,47,30,0.25);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease;
+    z-index: 1100;
+  }
+
+  .menu-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* =========================
+     MENU
+     ========================= */
+
+  .menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(330px, 85vw);
+    height: 100vh;
+    padding: 1.5rem;
+    background: rgba(253,250,243,0.97);
+    border-right: 1px solid #d8c58f;
+    box-shadow:
+      8px 0 35px rgba(59,47,30,0.15);
+    transform: translateX(-105%);
+    transition:
+      transform 0.3s cubic-bezier(.4,0,.2,1);
+    z-index: 1200;
+  }
+
+  .menu.open {
+    transform: translateX(0);
+  }
+
+  .menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(184,134,11,0.2);
+    color: #7a4a1a;
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+
+  .menu-close {
+    min-width: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: transparent;
+    color: #7a4a1a;
+    font-size: 1.8rem;
+    box-shadow: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .menu-close:hover {
+    background: rgba(184,134,11,0.1);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .menu-content {
+    padding-top: 1.5rem;
+  }
+
+  .menu-content a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 15px;
+    color: #4a3b23;
+    text-decoration: none;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .menu-content a:hover {
+    background: rgba(184,134,11,0.1);
+    transform: translateX(4px);
+  }
+
+  .menu-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: rgba(184,134,11,0.12);
+    font-size: 1.4rem;
+  }
+
+  .menu-content strong {
+    display: block;
+    color: #7a4a1a;
+    font-size: 1rem;
+  }
+
+  .menu-content small {
+    display: block;
+    margin-top: 3px;
+    color: #8a7150;
+    font-size: 0.78rem;
+  }
+
+  /* =========================
+     EN-TÊTE
+     ========================= */
+
+  header {
+    margin-bottom: 2rem;
+  }
+
+  .croix {
+    width: 65px;
+    height: 65px;
+
+    margin: 0 auto 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 17px;
+
+    background:
+      linear-gradient(
+        145deg,
+        rgba(255,255,255,0.82),
+        rgba(244,232,202,0.72)
+      );
+
+    border:
+      1px solid rgba(184,134,11,0.25);
+
+    color:
+      #b8860b;
+
+    font-size:
+      3rem;
+
+    box-shadow:
+      0 10px 26px rgba(122,74,26,0.14),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+
+    text-shadow:
+      0 2px 8px rgba(184,134,11,0.3);
+}
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.7rem, 7vw, 4.3rem);
+    line-height: 1;
+    color: #7a4a1a;
+    letter-spacing: 1px;
+    text-shadow: 1px 2px 3px rgba(0,0,0,0.08);
+  }
+
+  .sous-titre {
+    margin: 1rem auto 0;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: #8a7150;
+  }
+
+  /* =========================
+     NAVIGATION
+     ========================= */
+
+  .navigation {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: #7a4a1a;
+  }
+
+  .navigation span::before {
+    content: "✦";
+    margin-right: 6px;
+    color: #b8860b;
+  }
+
+  /* =========================
+     BLOC PRINCIPAL
+     ========================= */
+
+  .hero {
+    position: relative;
+    padding: 2.8rem 2rem;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.48);
+    border: 1px solid rgba(216,197,143,0.85);
+    box-shadow:
+      0 18px 50px rgba(122,74,26,0.14),
+      inset 0 1px 0 rgba(255,255,255,0.7);
+    backdrop-filter: blur(7px);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "✦";
+    position: absolute;
+    top: 18px;
+    left: 25px;
+    color: rgba(184,134,11,0.35);
+    font-size: 1.2rem;
+  }
+
+  .hero::after {
+    content: "✦";
+    position: absolute;
+    bottom: 18px;
+    right: 25px;
+    color: rgba(184,134,11,0.35);
+    font-size: 1.2rem;
+  }
+
+  .sur-titre {
+    margin: 0 0 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.72rem;
+    font-weight: bold;
+    color: #b8860b;
+  }
+
+  .hero h2 {
+    margin: 0 0 0.8rem;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    color: #7a4a1a;
+  }
+
+  .hero-intro {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    color: #806b4d;
+    line-height: 1.7;
+  }
+
+  /* =========================
+     CARTE VERSET
+     ========================= */
+
+  .carte-verset {
+    position: relative;
+    max-width: 720px;
+    min-height: 190px;
+    margin: 0 auto 2rem;
+    padding: 2.4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.68);
+    border: 1px solid #d8c58f;
+    box-shadow:
+      0 10px 30px rgba(122,74,26,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  .guillemet {
+    font-size: 3.5rem;
+    line-height: 0.5;
+    color: rgba(184,134,11,0.45);
+    margin-bottom: 1rem;
+  }
+
+  #verset-texte {
+    margin: 0 auto 1.2rem;
+    max-width: 600px;
+    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+    line-height: 1.7;
+    color: #4a3b23;
+  }
+
+  #verset-ref {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #b8860b;
+  }
+
+  /* Bouton copier spécifique */
+  .bouton-copier {
+    min-width: auto;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    background: rgba(184, 134, 11, 0.15);
+    color: #7a4a1a;
+    border: 1px solid rgba(184, 134, 11, 0.4);
+    box-shadow: none;
+    margin-top: 0.5rem;
+  }
+
+  .bouton-copier:hover {
+    background: rgba(184, 134, 11, 0.25);
+    transform: translateY(-2px);
+    box-shadow: none;
+  }
+
+
+/* Animation du verset */
+
+#verset-texte,
+#verset-ref {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+}
+
+#verset-texte.changement,
+#verset-ref.changement {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+  /* =========================
+     BOUTONS
+     ========================= */
+
+  .boutons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  button {
+    min-width: 220px;
+    padding: 1rem 1.7rem;
+    border: none;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(
+      135deg,
+      #d4a63a,
+      #b8860b
+    );
+    box-shadow:
+      0 7px 18px rgba(184,134,11,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.25);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      filter 0.2s ease;
+  }
+
+  button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.05);
+    box-shadow:
+      0 11px 25px rgba(184,134,11,0.38);
+  }
+
+  button:active {
+    transform: translateY(-1px);
+  }
+
+  #verset-jour {
+    background: linear-gradient(
+      135deg,
+      #a3703c,
+      #7a4a1a
+    );
+  }
+
+  /* =========================
+     SÉPARATEUR
+     ========================= */
+
+  .separateur {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 650px;
+    margin: 3rem auto;
+    color: #b8860b;
+  }
+
+  .separateur::before,
+  .separateur::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(184,134,11,0.3);
+  }
+
+  /* =========================
+     BLOCS
+     ========================= */
+
+  .blocs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.3rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .bloc {
+    padding: 1.8rem;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.43);
+    border: 1px solid rgba(216,197,143,0.7);
+    box-shadow:
+      0 8px 25px rgba(122,74,26,0.08);
+    transition: transform 0.2s ease;
+  }
+
+  .bloc:hover {
+    transform: translateY(-3px);
+  }
+
+  .bloc-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .bloc h3 {
+    margin: 0 0 0.7rem;
+    color: #7a4a1a;
+    font-size: 1.2rem;
+  }
+
+  .bloc p {
+    margin: 0;
+    color: #806b4d;
+    line-height: 1.65;
+    font-size: 0.95rem;
+  }
+
+  /* =========================
+     CITATION
+     ========================= */
+
+  .citation {
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    padding: 1.5rem 2rem;
+    border-left: 3px solid #b8860b;
+    border-right: 3px solid #b8860b;
+    color: #7a4a1a;
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  /* =========================
+     FOOTER
+     ========================= */
+
+  footer {
+    margin-top: 1rem;
+    color: #8a7150;
+    font-size: 0.85rem;
+  }
+
+  footer .mini-croix {
+    color: #b8860b;
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  /* =========================
+     MOBILE
+     ========================= */
+
+  @media (max-width: 650px) {
+
+    body {
+      padding: 1.2rem;
+    }
+
+    
+.menu-btn {
+  top: 15px;
+  left: 15px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+    }
+
+    .navigation {
+      gap: 1rem;
+    }
+
+    .hero {
+      padding: 2.2rem 1rem;
+    }
+
+    .carte-verset {
+      padding: 2rem 1.2rem;
+    }
+
+    .blocs {
+      grid-template-columns: 1fr;
+    }
+
+    button {
+      width: 100%;
+      max-width: 350px;
+    }
+  }
+
+
+  /* =========================
+     LISTE DES FAVORIS
+     ========================= */
+
+  .liste-favoris {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .liste-favoris .carte-verset {
+    margin: 0;
+    min-height: 0;
+    padding: 1.8rem 1.4rem 1.4rem;
+  }
+
+  .liste-favoris .carte-verset p {
+    margin: 0 0 0.8rem;
+    max-width: 600px;
+    font-size: clamp(1.1rem, 3.2vw, 1.4rem);
+    line-height: 1.65;
+    color: #4a3b23;
+  }
+
+  .liste-favoris .carte-verset p.ref {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #b8860b;
+  }
+
+  .actions-favori {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .actions-favori button {
+    min-width: 0;
+    width: auto;
+    max-width: none;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    background: rgba(184, 134, 11, 0.15);
+    color: #7a4a1a;
+    border: 1px solid rgba(184, 134, 11, 0.4);
+    box-shadow: none;
+  }
+
+  .actions-favori button:hover {
+    background: rgba(184, 134, 11, 0.25);
+    box-shadow: none;
+  }
+
+  .actions-favori .retirer {
+    background: rgba(200, 60, 60, 0.1);
+    border-color: rgba(200, 60, 60, 0.4);
+    color: #a02a2a;
+  }
+
+  .vide {
+    max-width: 520px;
+    margin: 0 auto;
+    color: #806b4d;
+    line-height: 1.7;
+  }
+
+  .lien-accueil {
+    display: inline-block;
+    margin-top: 1.2rem;
+    padding: 0.8rem 1.6rem;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #d4a63a, #b8860b);
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 7px 18px rgba(184,134,11,0.3);
+  }
+
+  /* =========================
+     CRÉER UNE IMAGE
+     ========================= */
+
+  #apercu { display: block; width: min(100%, 400px); height: auto; margin: 0 auto 0.8rem; border-radius: 16px; box-shadow: 0 14px 40px var(--ombre, rgba(60,40,10,0.3)); }
+  .etape { margin: 1.8rem 0 0.8rem; font-size: 1.15rem; color: var(--titre-doux, #7a4a1a); text-align: center; }
+  .rangee { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; margin-bottom: 0.7rem; }
+  .centre { text-align: center; }
+  .petit-texte { font-size: 0.85rem; color: var(--doux, #806b4d); margin: 0.4rem 0; text-align: center; }
+  .petit-texte a { color: var(--accent, #b8860b); }
+
+  .hero select, .hero input[type="text"], .hero input[type="search"] {
+    font-family: Georgia, serif; font-size: 0.95rem; padding: 0.6rem 0.8rem; border-radius: 12px; min-width: 0; max-width: 100%;
+    background: var(--carte, rgba(255,255,255,0.8)); color: var(--texte, #3b2f1e); border: 1px solid var(--carte-bord, #d8c58f);
+  }
+  .rangee select { flex: 1 1 110px; }
+  #q { flex: 1 1 180px; }
+
+  .btn-img {
+    min-width: 0; width: auto; max-width: none; padding: 0.55rem 1.1rem; font-size: 0.9rem; border-radius: 20px;
+    background: var(--petit, rgba(184,134,11,0.15)); color: var(--petit-texte, #7a4a1a);
+    border: 1px solid var(--petit-bord, rgba(184,134,11,0.4)); box-shadow: none; cursor: pointer;
+  }
+  .btn-img:hover { background: var(--petit-hover, rgba(184,134,11,0.25)); box-shadow: none; }
+  .btn-img.principal { background: var(--btn1, linear-gradient(135deg,#d4a63a,#b8860b)); color: var(--btn1-texte, #fff); border: none; }
+  .btn-img.actif { box-shadow: 0 0 0 3px var(--accent, #b8860b); }
+
+  .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 0.6rem; }
+  .vignette {
+    min-width: 0; width: 100%; max-width: none; aspect-ratio: 4 / 5; padding: 0; border-radius: 12px; overflow: hidden; cursor: pointer;
+    border: 2px solid var(--carte-bord, #d8c58f); box-shadow: none; background-size: cover; background-position: center;
+  }
+  .vignette:hover { box-shadow: none; filter: brightness(1.08); }
+  .vignette.actif { border-color: #fff; box-shadow: 0 0 0 3px var(--accent, #b8860b); }
+  .vignette img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .rond { min-width: 0; width: 38px; max-width: none; height: 38px; padding: 0; border-radius: 50%; font-family: Georgia, serif; font-weight: bold; border: 2px solid var(--carte-bord, #d8c58f); box-shadow: none; cursor: pointer; }
+  .rond:hover { box-shadow: none; }
+  .rond.blanc { background: #fff; color: #111; }
+  .rond.noir { background: #111; color: #fff; }
+  .rond.actif { box-shadow: 0 0 0 3px var(--accent, #b8860b); }
+  #couleur-surlignage { width: 44px; height: 38px; padding: 0; border-radius: 8px; cursor: pointer; }
+  .cache { display: none !important; }
+
+  .plein-ecran {
+    position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center;
+    height: 100vh; height: 100dvh; background: #000; cursor: zoom-out;
+  }
+  .plein-ecran[hidden] { display: none; }
+  .plein-ecran img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+  .plein-ecran button {
+    position: fixed; top: max(14px, env(safe-area-inset-top)); right: 14px; min-width: 0; width: 44px; max-width: none; height: 44px; padding: 0;
+    border-radius: 50%; background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.4);
+    font-size: 1.3rem; box-shadow: none; cursor: pointer;
+  }
+
+</style>
+<link rel="stylesheet" href="themes.css">
+<script src="theme.js"></script>
+</head>
+
+<body>
+
+<button
+  class="menu-btn"
+  id="menu-btn"
+  aria-label="Ouvrir le menu"
+  aria-expanded="false"
+>
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<div class="menu-overlay" id="menu-overlay"></div>
+
+<nav class="menu" id="menu">
+
+  <div class="menu-header">
+
+    <span>Menu</span>
+
+    <button
+      class="menu-close"
+      id="menu-close"
+      aria-label="Fermer le menu"
+    >
+      ×
+    </button>
+
+  </div>
+
+  <div class="menu-content">
+
+    <!-- ACCUEIL -->
+
+    <a href="index.html">
+
+      <span class="menu-icon">
+        🏠
+      </span>
+
+      <span>
+        <strong>Accueil</strong>
+
+        <small>
+          Retourner à l'accueil.
+        </small>
+      </span>
+
+    </a>
+
+
+    <!-- HISTOIRES BIBLIQUES -->
+
+
+    <a href="un-jour-une-histoire.html">
+
+      <span class="menu-icon">
+        📖
+      </span>
+
+      <span>
+        <strong>un jour, une histoire </strong>
+
+        <small>
+          Une histoire, Un encouragement.
+        </small>
+      </span>
+             
+             </a>
+            
+<a href="bible.html">
+        <span class="menu-icon">📖</span>
+        <span>
+          <strong>La Bible</strong>
+          <small>Lis la Bible Louis Segond, livre par livre.</small>
+        </span>
+      </a>
+
+      <a href="image.html">
+        <span class="menu-icon">🖼️</span>
+        <span>
+          <strong>Créer une image</strong>
+          <small>Mets un verset sur une belle photo.</small>
+        </span>
+      </a>
+
+      <a href="favoris.html">
+        <span class="menu-icon">❤️</span>
+        <span>
+          <strong>Mes favoris</strong>
+          <small>Retrouve les versets que tu as gardés.</small>
+        </span>
+      </a>
+
+      <a href="theme.html">
+        <span class="menu-icon">🎨</span>
+        <span>
+          <strong>Thème</strong>
+          <small>Change l'apparence du site : nuit, jour…</small>
+        </span>
+      </a>
+
+      <a href="https://www.jesus-stickers.com/stickers-jesus-baches-evangelisation.F/s41531c/DESTOCKAGE-JUSQU-A-60-" target="_blank" rel="noopener noreferrer">
+
+  <span class="menu-icon">
+    🖨️
+  </span>
+
+  <span>
+
+    <strong>
+      Stickers 🔖
+    </strong>
+
+    <small>
+      Découvre leurs stickers à prix coûtant.
+    </small>
+
+  </span>
+
+</a>
+    </a>
+
+  </div>
+
+</nav>
+
+<div class="site">
+
+  <header>
+    <div class="croix">🖼️</div>
+    <h1>Image</h1>
+    <p class="sous-titre">Un verset sur une belle photo.</p>
+  </header>
+
+  <main class="hero">
+    <canvas id="apercu" width="1080" height="1350"></canvas>
+    <p class="petit-texte" id="credit"></p>
+
+    <div class="rangee">
+      <button class="btn-img principal" id="btn-photos">📷 Enregistrer dans Photos</button>
+      <button class="btn-img principal" id="btn-telecharger">⬇️ Télécharger</button>
+      <button class="btn-img" id="btn-partager">📤 Partager</button>
+      <button class="btn-img" id="btn-plein-ecran">⛶ Plein écran</button>
+    </div>
+
+    <h3 class="etape">1. Choisis le verset</h3>
+    <div class="rangee">
+      <select id="cv-livre" aria-label="Livre"></select>
+      <select id="cv-chap" aria-label="Chapitre"></select>
+      <select id="cv-verset" aria-label="Verset"></select>
+    </div>
+    <div class="rangee"><select id="cv-fav" aria-label="Mes favoris" class="cache"></select></div>
+    <p class="petit-texte" id="cv-etat"></p>
+
+    <h3 class="etape">2. Choisis l'arrière-plan</h3>
+    <div class="grille" id="grille-fonds"></div>
+
+    <h3 class="etape">3. Ou ta propre photo</h3>
+    <div class="rangee">
+      <label class="btn-img principal" for="fichier">🖼️ Choisir une photo</label>
+      <input type="file" id="fichier" accept="image/*" class="cache">
+    </div>
+    <p class="petit-texte">Pas de photo sous la main ? Télécharge-en une gratuite sur
+      <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>,
+      <a href="https://www.pexels.com/" target="_blank" rel="noopener noreferrer">Pexels</a> ou
+      <a href="https://pixabay.com/" target="_blank" rel="noopener noreferrer">Pixabay</a>,
+      puis choisis-la ici.</p>
+    <p class="petit-texte" id="etat-recherche"></p>
+
+    <h3 class="etape">4. Couleur du texte</h3>
+    <div class="rangee">
+      <button class="rond blanc actif" id="texte-blanc" aria-label="Texte blanc">A</button>
+      <button class="rond noir" id="texte-noir" aria-label="Texte noir">A</button>
+      <label class="rangee cache" id="label-surlignage" style="margin:0;align-items:center;">Surlignage <input type="color" id="couleur-surlignage" value="#1f4aa0" aria-label="Couleur du surlignage"></label>
+    </div>
+
+    <p class="petit-texte">Texte biblique : Louis Segond 1910 (getBible.net).</p>
+  </main>
+
+  <footer style="margin-top:2rem;">
+    <div class="mini-croix">✝</div>
+    Jésus t'aime — Que sa paix t'accompagne.
+  </footer>
+
+</div>
+
+<div class="plein-ecran" id="plein-ecran" hidden>
+  <img id="plein-ecran-img" alt="Verset en plein écran">
+  <button id="plein-ecran-fermer" aria-label="Fermer le plein écran">✕</button>
+</div>
+
+<script>
+
+/* ----- Menu ----- */
+
+const menuBtn = document.getElementById("menu-btn");
+const menu = document.getElementById("menu");
+const menuClose = document.getElementById("menu-close");
+const menuOverlay = document.getElementById("menu-overlay");
+
+function ouvrirMenu() {
+  menu.classList.add("open");
+  menuOverlay.classList.add("open");
+  menuBtn.setAttribute("aria-expanded", "true");
+}
+
+function fermerMenu() {
+  menu.classList.remove("open");
+  menuOverlay.classList.remove("open");
+  menuBtn.setAttribute("aria-expanded", "false");
+}
+
+menuBtn.addEventListener("click", ouvrirMenu);
+menuClose.addEventListener("click", fermerMenu);
+menuOverlay.addEventListener("click", fermerMenu);
+
+document.querySelectorAll(".menu-content a").forEach(lien => {
+  lien.addEventListener("click", fermerMenu);
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") fermerMenu();
+});
+
+
+/* ----- Créer une image ----- */
+
+const W = 1080, H = 1350;
+const canvas = document.getElementById("apercu");
+const ctx = canvas.getContext("2d");
+const $ = id => document.getElementById(id);
+
+const API_BIBLE = "https://api.getbible.net/v2/ls1910";
+const LIVRES = [
+  ["Genèse",50],["Exode",40],["Lévitique",27],["Nombres",36],["Deutéronome",34],["Josué",24],["Juges",21],["Ruth",4],
+  ["1 Samuel",31],["2 Samuel",24],["1 Rois",22],["2 Rois",25],["1 Chroniques",29],["2 Chroniques",36],["Esdras",10],
+  ["Néhémie",13],["Esther",10],["Job",42],["Psaumes",150],["Proverbes",31],["Ecclésiaste",12],["Cantique des cantiques",8],
+  ["Ésaïe",66],["Jérémie",52],["Lamentations",5],["Ézéchiel",48],["Daniel",12],["Osée",14],["Joël",3],["Amos",9],
+  ["Abdias",1],["Jonas",4],["Michée",7],["Nahum",3],["Habacuc",3],["Sophonie",3],["Aggée",2],["Zacharie",14],["Malachie",4],
+  ["Matthieu",28],["Marc",16],["Luc",24],["Jean",21],["Actes",28],["Romains",16],["1 Corinthiens",16],["2 Corinthiens",13],
+  ["Galates",6],["Éphésiens",6],["Philippiens",4],["Colossiens",4],["1 Thessaloniciens",5],["2 Thessaloniciens",3],
+  ["1 Timothée",6],["2 Timothée",4],["Tite",3],["Philémon",1],["Hébreux",13],["Jacques",5],["1 Pierre",5],["2 Pierre",3],
+  ["1 Jean",5],["2 Jean",1],["3 Jean",1],["Jude",1],["Apocalypse",22]
+];
+
+/* ----- État ----- */
+
+let verset = {
+  texte: "Car Dieu a tant aimé le monde qu’il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu’il ait la vie éternelle.",
+  ref: "Jean 3 : 16"
+};
+let fondActuel = 0;              /* index dans FONDS, ou "photo" */
+let photo = null;
+let couleurTexte = "#ffffff";
+let couleurSurlignage = "#1f4aa0";
+let fichierPret = null, minuteur = null, version = 0;
+
+/* ----- Outils de dessin ----- */
+
+function rng(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function degrade(stops) {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  stops.forEach(([p, c]) => g.addColorStop(p, c));
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function lueur(x, y, rayon, couleur) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, rayon);
+  g.addColorStop(0, couleur);
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function nuages(r, nb, alpha) {
+  for (let i = 0; i < nb; i++) {
+    const x = r() * W, y = r() * H * 0.6, w = 200 + r() * 320;
+    for (let k = 0; k < 6; k++) {
+      const g = ctx.createRadialGradient(x + k * w / 8, y + r() * 30, 0, x + k * w / 8, y, w / 3);
+      g.addColorStop(0, "rgba(255,255,255," + alpha + ")");
+      g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+}
+
+function etoiles(graine, nb) {
+  const r = rng(graine);
+  for (let i = 0; i < nb; i++) {
+    const x = r() * W, y = r() * H * 0.85, t = r();
+    ctx.fillStyle = (t > 0.8 ? "rgba(255,234,181," : "rgba(255,255,255,") + (0.35 + t * 0.65) + ")";
+    ctx.beginPath();
+    ctx.arc(x, y, 0.8 + t * 2.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+/* ----- Les fonds dessinés (aperçu = dégradé CSS) ----- */
+
+const FONDS = [
+  { nom: "Nuit de lumière", css: "linear-gradient(160deg,#0c1736,#1a2a5e 55%,#3a3066)", clair: false,
+    dessiner() { degrade([[0, "#0c1736"], [0.55, "#1a2a5e"], [1, "#3a3066"]]); lueur(W / 2, H * 1.02, 850, "rgba(255,184,102,0.45)"); etoiles(5, 230); } },
+  { nom: "Jour lumineux", css: "linear-gradient(160deg,#7ec3f2,#bfe3fb 55%,#fff4dc)", clair: true,
+    dessiner() {
+      degrade([[0, "#7ec3f2"], [0.45, "#bfe3fb"], [1, "#fff4dc"]]);
+      lueur(W * 0.86, H * 0.07, 560, "rgba(255,236,150,0.95)");
+      ctx.fillStyle = "#fffbe0"; ctx.beginPath(); ctx.arc(W * 0.86, H * 0.07, 62, 0, Math.PI * 2); ctx.fill();
+      nuages(rng(8), 7, 0.5);
+    } },
+  { nom: "Parchemin", css: "linear-gradient(160deg,#fdfaf3,#f3ecd8 55%,#eaddb8)", clair: true,
+    dessiner() {
+      degrade([[0, "#fdfaf3"], [0.5, "#f3ecd8"], [1, "#eaddb8"]]);
+      lueur(W * 0.2, H * 0.1, 650, "rgba(255,255,255,0.6)");
+      lueur(W * 0.85, H * 0.92, 650, "rgba(183,139,62,0.2)");
+      ctx.strokeStyle = "rgba(184,134,11,0.5)"; ctx.lineWidth = 3; ctx.strokeRect(40, 40, W - 80, H - 80);
+      ctx.lineWidth = 1; ctx.strokeRect(56, 56, W - 112, H - 112);
+    } },
+  { nom: "Aube rose", css: "linear-gradient(160deg,#4b3a7a,#d9728f 55%,#ffc88a)", clair: false,
+    dessiner() { degrade([[0, "#4b3a7a"], [0.5, "#d9728f"], [1, "#ffc88a"]]); lueur(W / 2, H * 0.95, 800, "rgba(255,230,160,0.7)"); } },
+  { nom: "Océan", css: "linear-gradient(160deg,#0b3c5d,#1d7a8c 55%,#9fe0d0)", clair: false,
+    dessiner() { degrade([[0, "#0b3c5d"], [0.55, "#1d7a8c"], [1, "#9fe0d0"]]); lueur(W * 0.5, H * 0.1, 700, "rgba(200,240,255,0.35)"); } },
+  { nom: "Forêt", css: "linear-gradient(160deg,#0f3d2a,#2e7d4f 55%,#cfe8a5)", clair: false,
+    dessiner() { degrade([[0, "#0f3d2a"], [0.55, "#2e7d4f"], [1, "#cfe8a5"]]); lueur(W * 0.75, H * 0.12, 650, "rgba(255,255,200,0.45)"); } },
+  { nom: "Blanc surligné", css: "linear-gradient(180deg,#fff 0 28%,#1f4aa0 28% 64%,#fff 64%)", surligne: true }
+];
+
+/* ----- Texte ----- */
+
+function decouper(texte, largeur) {
+  const lignes = [];
+  let ligne = "";
+  texte.split(/\s+/).forEach(mot => {
+    const test = ligne ? ligne + " " + mot : mot;
+    if (ctx.measureText(test).width > largeur && ligne) { lignes.push(ligne); ligne = mot; }
+    else ligne = test;
+  });
+  if (ligne) lignes.push(ligne);
+  return lignes;
+}
+
+function luminance(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+}
+
+function razOmbre() {
+  ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+}
+
+function texteCentre(sombre) {
+  const or = sombre ? "rgba(138,98,8,0.95)" : "rgba(240,200,110,0.95)";
+  let t = 76, lignes, pas;
+  while (true) {
+    ctx.font = "italic " + t + "px Georgia, 'Times New Roman', serif";
+    lignes = decouper(verset.texte, W - 220);
+    pas = t * 1.38;
+    if (lignes.length * pas <= H * 0.5 || t <= 28) break;
+    t -= 2;
+  }
+  const hauteur = lignes.length * pas, debut = (H - hauteur) / 2 - 20;
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+  ctx.shadowColor = sombre ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)";
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 3;
+
+  ctx.fillStyle = or;                                   /* croix */
+  ctx.fillRect(W / 2 - 9, debut - 175, 18, 125);
+  ctx.fillRect(W / 2 - 38, debut - 141, 76, 18);
+
+  ctx.fillStyle = couleurTexte;                         /* verset */
+  ctx.font = "italic " + t + "px Georgia, 'Times New Roman', serif";
+  lignes.forEach((l, i) => ctx.fillText(l, W / 2, debut + pas * (i + 0.8)));
+
+  const yRef = debut + hauteur + 60;                    /* référence */
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = or;
+  ctx.fillRect(W / 2 - 60, yRef - 34, 120, 3);
+  ctx.font = "bold 48px Georgia, serif";
+  ctx.fillText(verset.ref, W / 2, yRef + 30);
+
+  razOmbre();
+  ctx.fillStyle = sombre ? "rgba(0,0,0,0.65)" : "rgba(255,255,255,0.7)";
+  ctx.font = "italic 40px Georgia, serif";
+  ctx.fillText("Jésus t\u2019aime", W / 2, H - 70);
+}
+
+function texteSurligne() {
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, W, H);
+  const marge = 90, pad = 14;
+  const police = t => t + "px Garamond, 'EB Garamond', 'Cormorant Garamond', Georgia, 'Times New Roman', serif";
+  let t = 84, lignes, pas;
+  while (true) {
+    ctx.font = police(t);
+    lignes = decouper(verset.texte, W - marge * 2 - pad * 2);
+    pas = t * 1.75;
+    if (lignes.length * pas <= H * 0.6 || t <= 30) break;
+    t -= 2;
+  }
+  const hRect = t * 1.3, total = (lignes.length - 1) * pas + hRect + 95, y0 = (H - total) / 2;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  lignes.forEach((l, i) => {
+    const y = y0 + i * pas;
+    ctx.font = police(t);
+    razOmbre();
+    ctx.fillStyle = couleurSurlignage;
+    ctx.fillRect(marge, y, ctx.measureText(l).width + pad * 2, hRect);
+    if (couleurTexte === "#ffffff") { ctx.shadowColor = "rgba(0,0,0,0.7)"; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2; }
+    ctx.fillStyle = couleurTexte;
+    ctx.fillText(l, marge + pad, y + hRect / 2 + t * 0.28);
+  });
+  razOmbre();
+  ctx.fillStyle = luminance(couleurSurlignage) > 0.78 ? "#555555" : couleurSurlignage;
+  ctx.font = "bold 58px 'Arial Narrow', 'Roboto Condensed', 'Helvetica Neue', Arial, sans-serif";
+  ctx.fillText(verset.ref, marge + 4, y0 + (lignes.length - 1) * pas + hRect + 90);
+  ctx.textAlign = "center";
+  ctx.globalAlpha = 0.8;
+  ctx.font = "italic 40px Georgia, serif";
+  ctx.fillText("Jésus t\u2019aime", W / 2, H - 70);
+  ctx.globalAlpha = 1;
+}
+
+function couvrir(img) {
+  const r = Math.max(W / img.width, H / img.height);
+  ctx.drawImage(img, (W - img.width * r) / 2, (H - img.height * r) / 2, img.width * r, img.height * r);
+}
+
+function dessiner() {
+  ctx.clearRect(0, 0, W, H);
+  razOmbre();
+  const f = fondActuel === "photo" ? null : FONDS[fondActuel];
+
+  if (f && f.surligne) {
+    texteSurligne();
+  } else {
+    if (f) f.dessiner(); else couvrir(photo);
+    const sombre = couleurTexte !== "#ffffff";
+    const clair = !!(f && f.clair);
+    const base = sombre ? "255,255,255" : "0,0,0";
+    const a = sombre ? (clair ? [0.12, 0.18, 0.12] : [0.42, 0.5, 0.42]) : (clair ? [0.42, 0.5, 0.42] : [0.32, 0.4, 0.32]);
+    const v = ctx.createLinearGradient(0, 0, 0, H);
+    v.addColorStop(0, "rgba(" + base + "," + a[0] + ")");
+    v.addColorStop(0.5, "rgba(" + base + "," + a[1] + ")");
+    v.addColorStop(1, "rgba(" + base + "," + a[2] + ")");
+    ctx.fillStyle = v;
+    ctx.fillRect(0, 0, W, H);
+    texteCentre(sombre);
+  }
+
+  /* le PNG est préparé à l'avance : le partage doit partir directement du clic */
+  fichierPret = null;
+  const num = ++version;
+  clearTimeout(minuteur);
+  minuteur = setTimeout(() => {
+    canvas.toBlob(blob => {
+      if (blob && num === version) fichierPret = new File([blob], nomFichier(), { type: "image/png" });
+    }, "image/png");
+  }, 150);
+}
+
+/* ----- Choix du fond ----- */
+
+const grilleFonds = $("grille-fonds");
+const vignettesFonds = [];
+
+function majActifs() {
+  vignettesFonds.forEach((b, i) => b.classList.toggle("actif", fondActuel === i));
+  $("texte-blanc").classList.toggle("actif", couleurTexte === "#ffffff");
+  $("texte-noir").classList.toggle("actif", couleurTexte !== "#ffffff");
+  $("label-surlignage").classList.toggle("cache", !(fondActuel !== "photo" && FONDS[fondActuel].surligne));
+}
+
+FONDS.forEach((f, i) => {
+  const b = document.createElement("button");
+  b.className = "vignette";
+  b.style.background = f.css;
+  b.title = f.nom;
+  b.setAttribute("aria-label", f.nom);
+  b.addEventListener("click", () => {
+    fondActuel = i;
+    if (!f.surligne) couleurTexte = f.clair ? "#111111" : "#ffffff";
+    $("credit").textContent = "";
+    majActifs();
+    dessiner();
+  });
+  grilleFonds.appendChild(b);
+  vignettesFonds.push(b);
+});
+
+$("texte-blanc").addEventListener("click", () => { couleurTexte = "#ffffff"; majActifs(); dessiner(); });
+$("texte-noir").addEventListener("click", () => { couleurTexte = "#111111"; majActifs(); dessiner(); });
+$("couleur-surlignage").addEventListener("input", e => { couleurSurlignage = e.target.value; dessiner(); });
+
+/* ----- Choix du verset ----- */
+
+const cvLivre = $("cv-livre"), cvChap = $("cv-chap"), cvVerset = $("cv-verset"), cvFav = $("cv-fav");
+let versetsChapitre = [], jetonCv = 0;
+
+function options(select, premier, valeurs) {
+  select.innerHTML = "";
+  [["", premier]].concat(valeurs).forEach(([val, txt]) => {
+    const o = document.createElement("option");
+    o.value = val;
+    o.textContent = txt;
+    select.appendChild(o);
+  });
+  select.value = "";
+}
+
+function etatVerset(t) { $("cv-etat").textContent = t || ""; }
+
+function lireFavoris() {
+  try { const l = JSON.parse(localStorage.getItem("versetsFavoris")); return Array.isArray(l) ? l : []; }
+  catch (e) { return []; }
+}
+
+options(cvLivre, "Livre…", LIVRES.map((l, i) => [i, l[0]]));
+options(cvChap, "Chap.", []);
+options(cvVerset, "Verset…", []);
+
+const favs = lireFavoris();
+if (favs.length) {
+  cvFav.classList.remove("cache");
+  options(cvFav, "❤️ Choisir parmi mes favoris…", favs.map((f, i) => [i, f.ref + " — " + f.texte.slice(0, 40) + (f.texte.length > 40 ? "…" : "")]));
+}
+
+cvLivre.addEventListener("change", () => {
+  etatVerset("");
+  options(cvVerset, "Verset…", []);
+  if (cvLivre.value === "") { options(cvChap, "Chap.", []); return; }
+  options(cvChap, "Chap.", Array.from({ length: LIVRES[Number(cvLivre.value)][1] }, (_, i) => [i + 1, "Chap. " + (i + 1)]));
+});
+
+cvChap.addEventListener("change", async () => {
+  etatVerset("");
+  options(cvVerset, "Verset…", []);
+  versetsChapitre = [];
+  if (cvChap.value === "" || cvLivre.value === "") return;
+  const mon = ++jetonCv;
+  etatVerset("Chargement…");
+  try {
+    const rep = await fetch(API_BIBLE + "/" + (Number(cvLivre.value) + 1) + "/" + cvChap.value + ".json");
+    if (!rep.ok) throw new Error("HTTP " + rep.status);
+    const data = await rep.json();
+    let v = data && data.verses;
+    if (v && !Array.isArray(v)) v = Object.values(v);
+    if (!Array.isArray(v) || !v.length) throw new Error("vide");
+    if (mon !== jetonCv) return;
+    versetsChapitre = v;
+    options(cvVerset, "Verset…", v.map(x => [x.verse, "Verset " + x.verse]));
+    etatVerset("");
+  } catch (e) {
+    if (mon === jetonCv) etatVerset("Impossible de charger ce chapitre (connexion internet ?).");
+  }
+});
+
+cvVerset.addEventListener("change", () => {
+  const v = versetsChapitre.find(x => String(x.verse) === cvVerset.value);
+  if (!v) return;
+  verset = { texte: String(v.text).trim(), ref: LIVRES[Number(cvLivre.value)][0] + " " + cvChap.value + " : " + v.verse };
+  dessiner();
+});
+
+cvFav.addEventListener("change", () => {
+  const f = favs[Number(cvFav.value)];
+  if (cvFav.value === "" || !f) return;
+  verset = { texte: f.texte, ref: f.ref };
+  dessiner();
+});
+
+/* ----- Ta propre photo ----- */
+
+function etatPhotos(t) { $("etat-recherche").textContent = t || ""; }
+
+$("fichier").addEventListener("change", () => {
+  const f = $("fichier").files[0];
+  if (!f) return;
+  const im = new Image();
+  im.onload = () => {
+    photo = im;
+    fondActuel = "photo";
+    couleurTexte = "#ffffff";
+    $("credit").textContent = "";
+    etatPhotos("");
+    majActifs();
+    dessiner();
+  };
+  im.onerror = () => etatPhotos("Impossible de lire cette image.");
+  im.src = URL.createObjectURL(f);
+});
+
+/* ----- Enregistrer / partager ----- */
+
+function nomFichier() {
+  return "verset-" + verset.ref.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".png";
+}
+
+const estIOS = /iPad|iPhone|iPod/.test(navigator.userAgent || "") ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+async function partager(avecTitre) {
+  let fichier = fichierPret;
+  if (!fichier) {
+    const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
+    fichier = new File([blob], nomFichier(), { type: "image/png" });
+  }
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [fichier] })) {
+    try {
+      await navigator.share(avecTitre ? { files: [fichier], title: verset.ref } : { files: [fichier] });
+      return true;
+    } catch (e) {
+      if (e && e.name === "AbortError") return true;
+    }
+  }
+  return false;
+}
+
+function telecharger() {
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = nomFichier();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, "image/png");
+}
+
+const peutPartager = !!(navigator.share && navigator.canShare);
+$("btn-photos").classList.toggle("cache", !estIOS);
+$("btn-telecharger").classList.toggle("cache", estIOS);
+$("btn-partager").classList.toggle("cache", estIOS || !peutPartager);
+
+$("btn-photos").addEventListener("click", async () => {
+  if (!(await partager(false))) telecharger();
+});
+$("btn-telecharger").addEventListener("click", telecharger);
+$("btn-partager").addEventListener("click", () => partager(true));
+
+  /* ----- Plein écran (sur iPhone : affichage sur tout l'écran ; ailleurs : vrai plein écran) ----- */
+
+  const pleinEcran = document.getElementById("plein-ecran");
+  const pleinEcranImg = document.getElementById("plein-ecran-img");
+  let urlPleinEcran = null;
+
+  function ouvrirPleinEcran() {
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      if (urlPleinEcran) URL.revokeObjectURL(urlPleinEcran);
+      urlPleinEcran = URL.createObjectURL(blob);
+      pleinEcranImg.src = urlPleinEcran;
+      pleinEcran.hidden = false;
+      try {
+        if (pleinEcran.requestFullscreen) pleinEcran.requestFullscreen().catch(() => {});
+        else if (pleinEcran.webkitRequestFullscreen) pleinEcran.webkitRequestFullscreen();
+      } catch (e) {}
+    }, "image/png");
+  }
+
+  function fermerPleinEcran() {
+    pleinEcran.hidden = true;
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } catch (e) {}
+  }
+
+  pleinEcran.addEventListener("click", fermerPleinEcran);
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) pleinEcran.hidden = true; });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !pleinEcran.hidden) fermerPleinEcran(); });
+  canvas.style.cursor = "zoom-in";
+  canvas.addEventListener("click", ouvrirPleinEcran);
+
+$("btn-plein-ecran").addEventListener("click", ouvrirPleinEcran);
+$("plein-ecran-fermer").addEventListener("click", e => { e.stopPropagation(); fermerPleinEcran(); });
+
+/* ----- Démarrage ----- */
+
+majActifs();
+dessiner();
+
+</script>
+
+</body>
+</html>
