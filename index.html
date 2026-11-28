@@ -492,6 +492,46 @@ body {
     line-height: 1.5;
   }
 
+
+  .image-overlay { overflow-y: auto; justify-content: flex-start; }
+  .image-overlay > :first-child { margin-top: auto; }
+  .image-overlay > :last-child { margin-bottom: auto; }
+  .image-overlay.avec-choix #image-canvas, .image-overlay.avec-choix #image-astuce-img { max-height: 36vh; }
+
+  .lien-choix {
+    min-width: 0; width: auto; max-width: none; padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 20px;
+    background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.35); box-shadow: none;
+  }
+  .lien-choix:hover { background: rgba(255,255,255,0.22); box-shadow: none; }
+
+  .choix-verset { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; width: 100%; max-width: 460px; }
+  .choix-verset[hidden] { display: none; }
+  .choix-ligne { display: flex; gap: 0.5rem; width: 100%; }
+  .choix-ligne select { flex: 1; min-width: 0; }
+
+  .choix-verset select {
+    font-family: Georgia, serif; font-size: 0.9rem; padding: 0.55rem 0.5rem; border-radius: 12px;
+    background: rgba(255,255,255,0.14); color: #fff; border: 1px solid rgba(255,255,255,0.35); max-width: 100%;
+  }
+  .choix-verset select option { color: #111; }
+  .choix-verset > select { width: 100%; }
+  .choix-verset select[hidden] { display: none; }
+  .cv-etat { margin: 0; color: #ffd9a0; font-size: 0.85rem; text-align: center; }
+  .cv-etat[hidden] { display: none; }
+
+
+  .plein-ecran {
+    position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center;
+    height: 100vh; height: 100dvh; background: #000; cursor: zoom-out;
+  }
+  .plein-ecran[hidden] { display: none; }
+  .plein-ecran img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+  .plein-ecran button {
+    position: fixed; top: max(14px, env(safe-area-inset-top)); right: 14px; min-width: 0; width: 44px; max-width: none; height: 44px; padding: 0;
+    border-radius: 50%; background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.4);
+    font-size: 1.3rem; box-shadow: none; cursor: pointer;
+  }
+
   .image-reglages {
     display: flex;
     flex-direction: column;
@@ -936,7 +976,23 @@ body {
              
              </a>
             
-<a href="favoris.html">
+<a href="bible.html">
+        <span class="menu-icon">📖</span>
+        <span>
+          <strong>La Bible</strong>
+          <small>Lis la Bible Louis Segond, livre par livre.</small>
+        </span>
+      </a>
+
+      <a href="image.html">
+        <span class="menu-icon">🖼️</span>
+        <span>
+          <strong>Créer une image</strong>
+          <small>Mets un verset sur une belle photo.</small>
+        </span>
+      </a>
+
+      <a href="favoris.html">
         <span class="menu-icon">❤️</span>
         <span>
           <strong>Mes favoris</strong>
@@ -1362,6 +1418,11 @@ if (boutonCopier && versetTexte && versetRef) {
      VERSET EN IMAGE
      ========================= -->
 
+<div class="plein-ecran" id="plein-ecran" hidden>
+  <img id="plein-ecran-img" alt="Verset en plein écran">
+  <button id="plein-ecran-fermer" aria-label="Fermer le plein écran">✕</button>
+</div>
+
 <div class="image-overlay" id="image-overlay">
   <canvas id="image-canvas" width="1080" height="1350"></canvas>
   <img id="image-astuce-img" alt="Verset en image" hidden>
@@ -1381,10 +1442,24 @@ if (boutonCopier && versetTexte && versetRef) {
     </div>
   </div>
 
+  <button id="cv-ouvrir" class="lien-choix">📖 Choisir un autre verset</button>
+
+  <div class="choix-verset" id="choix-verset" hidden>
+    <div class="choix-ligne">
+      <select id="cv-livre" aria-label="Livre"></select>
+      <select id="cv-chap" aria-label="Chapitre"></select>
+      <select id="cv-verset" aria-label="Verset"></select>
+    </div>
+    <select id="cv-fav" aria-label="Mes favoris" hidden></select>
+    <p class="cv-etat" id="cv-etat" hidden></p>
+    <button id="cv-retour" class="lien-choix">↩︎ Revenir au verset tiré</button>
+  </div>
+
   <div class="image-actions">
     <button id="image-photos" hidden>📷 Enregistrer dans Photos</button>
     <button id="image-telecharger">⬇️ Télécharger</button>
     <button id="image-partager" class="secondaire" hidden>📤 Partager</button>
+    <button id="image-plein-ecran" class="secondaire">⛶ Plein écran</button>
     <button id="image-fermer" class="secondaire">Fermer</button>
   </div>
 </div>
@@ -1414,6 +1489,11 @@ if (boutonCopier && versetTexte && versetRef) {
 
   const FOND_SURLIGNE = 3;
   let fondActuel = 0;
+  let versetImage = null;   /* verset choisi à la main ; sinon on prend celui qui est tiré */
+
+  function versetPourImage() {
+    return versetImage || { texte: texteEl.textContent.trim(), ref: refEl.textContent.trim() };
+  }
   let couleurTexte = "#ffffff";
   let couleurSurlignage = "#1f4aa0";
 
@@ -1625,7 +1705,7 @@ if (boutonCopier && versetTexte && versetRef) {
     ctx.shadowOffsetY = 0;
 
     if (fondActuel === FOND_SURLIGNE) {
-      dessinerSurligne(texteEl.textContent.trim(), refEl.textContent.trim());
+      dessinerSurligne(versetPourImage().texte, versetPourImage().ref);
       return;
     }
 
@@ -1647,8 +1727,8 @@ if (boutonCopier && versetTexte && versetRef) {
     ctx.fillStyle = v;
     ctx.fillRect(0, 0, W, H);
 
-    const texte = texteEl.textContent.trim();
-    const ref = refEl.textContent.trim();
+    const texte = versetPourImage().texte;
+    const ref = versetPourImage().ref;
 
     const largeur = W - 220;
     const hauteurMax = H * 0.5;
@@ -1701,8 +1781,139 @@ if (boutonCopier && versetTexte && versetRef) {
 
   /* ----- Actions ----- */
 
+  /* ----- Choisir un autre verset (n'importe où dans la Bible, ou parmi les favoris) ----- */
+
+  const API_BIBLE = "https://api.getbible.net/v2/ls1910";
+  const LIVRES = [
+    ["Genèse",50],["Exode",40],["Lévitique",27],["Nombres",36],["Deutéronome",34],["Josué",24],["Juges",21],["Ruth",4],
+    ["1 Samuel",31],["2 Samuel",24],["1 Rois",22],["2 Rois",25],["1 Chroniques",29],["2 Chroniques",36],["Esdras",10],
+    ["Néhémie",13],["Esther",10],["Job",42],["Psaumes",150],["Proverbes",31],["Ecclésiaste",12],["Cantique des cantiques",8],
+    ["Ésaïe",66],["Jérémie",52],["Lamentations",5],["Ézéchiel",48],["Daniel",12],["Osée",14],["Joël",3],["Amos",9],
+    ["Abdias",1],["Jonas",4],["Michée",7],["Nahum",3],["Habacuc",3],["Sophonie",3],["Aggée",2],["Zacharie",14],["Malachie",4],
+    ["Matthieu",28],["Marc",16],["Luc",24],["Jean",21],["Actes",28],["Romains",16],["1 Corinthiens",16],["2 Corinthiens",13],
+    ["Galates",6],["Éphésiens",6],["Philippiens",4],["Colossiens",4],["1 Thessaloniciens",5],["2 Thessaloniciens",3],
+    ["1 Timothée",6],["2 Timothée",4],["Tite",3],["Philémon",1],["Hébreux",13],["Jacques",5],["1 Pierre",5],["2 Pierre",3],
+    ["1 Jean",5],["2 Jean",1],["3 Jean",1],["Jude",1],["Apocalypse",22]
+  ];
+
+  const cvOuvrir = document.getElementById("cv-ouvrir");
+  const panneau  = document.getElementById("choix-verset");
+  const cvLivre  = document.getElementById("cv-livre");
+  const cvChap   = document.getElementById("cv-chap");
+  const cvVerset = document.getElementById("cv-verset");
+  const cvFav    = document.getElementById("cv-fav");
+  const cvRetour = document.getElementById("cv-retour");
+  const cvEtat   = document.getElementById("cv-etat");
+
+  let versetsChapitre = [];
+  let jetonCv = 0;
+
+  function options(select, premier, valeurs) {
+    select.innerHTML = "";
+    const o0 = document.createElement("option");
+    o0.value = "";
+    o0.textContent = premier;
+    select.appendChild(o0);
+    valeurs.forEach(([val, txt]) => {
+      const o = document.createElement("option");
+      o.value = val;
+      o.textContent = txt;
+      select.appendChild(o);
+    });
+    select.value = "";
+  }
+
+  function etat(texte) {
+    cvEtat.textContent = texte || "";
+    cvEtat.hidden = !texte;
+  }
+
+  function lireFavorisImage() {
+    try {
+      const l = JSON.parse(localStorage.getItem("versetsFavoris"));
+      return Array.isArray(l) ? l : [];
+    } catch (e) { return []; }
+  }
+
+  function remplirSelecteurs() {
+    options(cvLivre, "Livre…", LIVRES.map((l, i) => [i, l[0]]));
+    options(cvChap, "Chap.", []);
+    options(cvVerset, "Verset…", []);
+    const favs = lireFavorisImage();
+    cvFav.hidden = favs.length === 0;
+    options(cvFav, "❤️ Choisir parmi mes favoris…",
+      favs.map((f, i) => [i, f.ref + " — " + f.texte.slice(0, 40) + (f.texte.length > 40 ? "…" : "")]));
+    etat("");
+  }
+
+  function retourVersetTire(redessiner) {
+    versetImage = null;
+    panneau.hidden = true;
+    overlay.classList.remove("avec-choix");
+    remplirSelecteurs();
+    if (redessiner) dessiner();
+  }
+
+  cvOuvrir.addEventListener("click", () => {
+    panneau.hidden = !panneau.hidden;
+    overlay.classList.toggle("avec-choix", !panneau.hidden);
+    if (!panneau.hidden) remplirSelecteurs();
+  });
+
+  cvRetour.addEventListener("click", () => retourVersetTire(true));
+
+  cvLivre.addEventListener("change", () => {
+    etat("");
+    options(cvVerset, "Verset…", []);
+    if (cvLivre.value === "") { options(cvChap, "Chap.", []); return; }
+    const n = LIVRES[Number(cvLivre.value)][1];
+    options(cvChap, "Chap.", Array.from({ length: n }, (_, i) => [i + 1, "Chap. " + (i + 1)]));
+  });
+
+  cvChap.addEventListener("change", async () => {
+    etat("");
+    options(cvVerset, "Verset…", []);
+    versetsChapitre = [];
+    if (cvChap.value === "" || cvLivre.value === "") return;
+    const mon = ++jetonCv;
+    etat("Chargement…");
+    try {
+      const rep = await fetch(API_BIBLE + "/" + (Number(cvLivre.value) + 1) + "/" + cvChap.value + ".json");
+      if (!rep.ok) throw new Error("HTTP " + rep.status);
+      const data = await rep.json();
+      let v = data && data.verses;
+      if (v && !Array.isArray(v)) v = Object.values(v);
+      if (!Array.isArray(v) || !v.length) throw new Error("vide");
+      if (mon !== jetonCv) return;
+      versetsChapitre = v;
+      options(cvVerset, "Verset…", v.map(x => [x.verse, "Verset " + x.verse]));
+      etat("");
+    } catch (e) {
+      if (mon !== jetonCv) return;
+      etat("Impossible de charger ce chapitre (connexion internet ?).");
+    }
+  });
+
+  cvVerset.addEventListener("change", () => {
+    const v = versetsChapitre.find(x => String(x.verse) === cvVerset.value);
+    if (!v) return;
+    versetImage = {
+      texte: String(v.text).trim(),
+      ref: LIVRES[Number(cvLivre.value)][0] + " " + cvChap.value + " : " + v.verse
+    };
+    dessiner();
+  });
+
+  cvFav.addEventListener("change", () => {
+    const f = lireFavorisImage()[Number(cvFav.value)];
+    if (cvFav.value === "" || !f) return;
+    versetImage = { texte: f.texte, ref: f.ref };
+    dessiner();
+  });
+
   function ouvrir() {
     if (!refEl.textContent.trim()) return;
+    retourVersetTire(false);
     dessiner();
     overlay.classList.add("open");
   }
@@ -1714,7 +1925,7 @@ if (boutonCopier && versetTexte && versetRef) {
   bouton.addEventListener("click", ouvrir);
   btnClose.addEventListener("click", fermer);
   overlay.addEventListener("click", e => { if (e.target === overlay) fermer(); });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") fermer(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && pleinEcran.hidden) fermer(); });
 
   /* pastilles rondes : une par arrière-plan */
   const pastilles = fondsInfo.map((f, i) => {
@@ -1760,7 +1971,7 @@ if (boutonCopier && versetTexte && versetRef) {
   majReglages();
 
   function nomFichier() {
-    return "verset-" + refEl.textContent.trim()
+    return "verset-" + versetPourImage().ref
       .toLowerCase()
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".png";
@@ -1810,7 +2021,7 @@ if (boutonCopier && versetTexte && versetRef) {
     }
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [fichier] })) {
       try {
-        await navigator.share(avecTitre ? { files: [fichier], title: refEl.textContent.trim() } : { files: [fichier] });
+        await navigator.share(avecTitre ? { files: [fichier], title: versetPourImage().ref } : { files: [fichier] });
         return true;
       } catch (e) {
         if (e && e.name === "AbortError") return true;
@@ -1826,6 +2037,43 @@ if (boutonCopier && versetTexte && versetRef) {
     texteAstuce.hidden = false;
     canvas.style.display = "none";
   }
+
+  /* ----- Plein écran (sur iPhone : affichage sur tout l'écran ; ailleurs : vrai plein écran) ----- */
+
+  const pleinEcran = document.getElementById("plein-ecran");
+  const pleinEcranImg = document.getElementById("plein-ecran-img");
+  let urlPleinEcran = null;
+
+  function ouvrirPleinEcran() {
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      if (urlPleinEcran) URL.revokeObjectURL(urlPleinEcran);
+      urlPleinEcran = URL.createObjectURL(blob);
+      pleinEcranImg.src = urlPleinEcran;
+      pleinEcran.hidden = false;
+      try {
+        if (pleinEcran.requestFullscreen) pleinEcran.requestFullscreen().catch(() => {});
+        else if (pleinEcran.webkitRequestFullscreen) pleinEcran.webkitRequestFullscreen();
+      } catch (e) {}
+    }, "image/png");
+  }
+
+  function fermerPleinEcran() {
+    pleinEcran.hidden = true;
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } catch (e) {}
+  }
+
+  pleinEcran.addEventListener("click", fermerPleinEcran);
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) pleinEcran.hidden = true; });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !pleinEcran.hidden) fermerPleinEcran(); });
+  canvas.style.cursor = "zoom-in";
+  canvas.addEventListener("click", ouvrirPleinEcran);
+
+  document.getElementById("image-plein-ecran").addEventListener("click", ouvrirPleinEcran);
+  document.getElementById("plein-ecran-fermer").addEventListener("click", e => { e.stopPropagation(); fermerPleinEcran(); });
 
   if (estIOS) {
     btnDl.hidden = true;
